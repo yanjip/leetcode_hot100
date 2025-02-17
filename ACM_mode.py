@@ -28,5 +28,5 @@
 #     print(' '.join(str(x) for x in row))
 
 # # 5. 字符串输入
-# s = input().strip()
-# print(s)
+s = input().strip()
+print(s)
