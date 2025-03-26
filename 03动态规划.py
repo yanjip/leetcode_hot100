@@ -39,8 +39,52 @@ def rob3(self, nums: list[int]) -> int:
 # nums=list(map(int,input().strip().split()))
 # print(rob(nums))
 
+#  70. 爬楼梯
+def climbStairs( n: int) -> int:
+    # @cache
+    # def dfs(i):
+    #     if i==0 or i==1:
+    #         return 1
+    #     return dfs(i-1)+dfs(i-2)
+    # return dfs(n)
+
+    # dfs=[0]*(n+1)
+    # dfs[1],dfs[0]=1,1
+    # for i in range(0,n-1):
+    #     dfs[i+2]=dfs[i+1]+dfs[i]
+    # return dfs[n]
+
+    dfs=[0]*(n+1)
+    dfs[0]=dfs[1]=1
+    for i in range(2,n+1):
+        dfs[i]=dfs[i-1]+dfs[i-2]
+    return dfs[n]
+
+# 377. 组合总和 Ⅳ
+def combinationSum4(nums: list[int], target: int) -> int:
+    @cache
+    def dfs(i):
+        if i==0: return 1
+        total=0
+        for x in nums:
+            if x<=i:
+                total+=dfs(i-x)
+        return total
+    return dfs(target )
+
+#  01 背包问题 (选或不选） 返回能够选择的最大价值
+def zero_one_Bag(capacity, weights: list[int], values: list[int]):
+    n=len(weights)
+    @cache
+    def dfs(i,c):
+        if i<0: return 0
+        if weights[i]>c:  # 只能不选 选不了
+            return dfs(i-1,c)
+        return max(dfs(i-1,c),values[i]+dfs(i-1,c-weights[i]))
+    return dfs(n-1,capacity)
+
 # 494. 目标和
-# 分析：假设合法的方案中，所有的整数之和为 p, 那么所有的负数之和为-(sum(nums)-p). 若要满足目标和，则有
+# 分析：假设合法的方案中，所有的正数之和为 p, 那么所有的负数之和为-(sum(nums)-p). 若要满足目标和，则有
 # p - (sum(nums)-p) = target   ==>      p= (sum(nums)+target)/2   也就是说sum(nums)+target必须为偶数，否则没有合法的方案
 # 此时问题可以看做一个背包问题，背包容量为p，背包中放nums中的元素，问有多少种方案使得背包中元素和为p
 def findTargetSumWays(nums: list[int], target: int):
@@ -62,7 +106,7 @@ def findTargetSumWays2(nums: list[int], target: int):
         return 0
     target//=2
     dfs=[[0]*(target+1) for _ in range(n+1)]  # 使用 n+1 可以确保在遍历所有元素时不会出现索引越界的问题
-    dfs[0][0]=1
+    dfs[0][0]=1  # 很重要，对应上述dfs做法，其中i<0 and target==0 的情况,答案为1。但由于上面一行索引加了1，因此对应的是i==0 的情况
     for i in range(n):
         for  j in range(target+1):
             if j<nums[i]:
@@ -75,7 +119,8 @@ def findTargetSumWays2(nums: list[int], target: int):
 # nums=[1,1,1,1,1]
 # target=int(input().strip())
 # print(findTargetSumWays2(nums,target))
-# 322. 零钱兑换
+
+# 322. 零钱兑换  完全背包问题 返回能凑成amount的最小的硬币数
 def coinChange(coins: list[int], amount: int) -> int:
     n=len(coins)
     # def dfs(i,target):  # 回溯写法--超时
@@ -108,6 +153,35 @@ coins=[3,7,405,436]
 # amount=int(input().strip())
 # print(coinChange2(coins,amount))
 
+# 416. 分割等和子集
+# 时间复杂度：O(ns)，其中 n 是 nums 的长度，s 是 nums 的元素和（的一半）。由于每个状态只会计算一次，
+# 动态规划的时间复杂度 = 状态个数 × 单个状态的计算时间。本题状态个数等于 O(ns)，单个状态的计算时间为 O(1)
+def canPartition(nums: list[int]) -> bool:
+    s = sum(nums)
+    if s % 2 == 1: return False
+    n = len(nums)
+    @cache
+    def dfs(i, c):
+        if i < 0:
+            # return True if c==0 else False
+            return c == 0
+        if nums[i] > c:
+            return dfs(i - 1, c)
+        return dfs(i - 1, c) or dfs(i - 1, c - nums[i])
+    return dfs(n - 1, s//2)
+def canPartition2(nums: list[int]) -> bool:
+    s = sum(nums)
+    if s % 2 == 1: return False
+    n = len(nums)
+    dfs = [[False] * (s + 1) for _ in range(n + 1)]
+    dfs[0][0] = True
+    for i, x in enumerate(nums):
+        for j in range(s + 1):
+            if x > j:
+                dfs[i + 1][j] = dfs[i][j]
+            else:
+                dfs[i + 1][j] = dfs[i][j] or dfs[i][j - x]
+    return dfs[-1][-1]
 # 1143. 最长公共子序列
 def longestCommonSubsequence(text1: str, text2: str) -> int:
     len1=len(text1)
@@ -215,6 +289,18 @@ def lengthOfLIS_ditui(nums: list[int]) -> int:
 # elapsed_time = end_time - start_time
 # print(f"程序运行时间: {elapsed_time:.6f} 秒")
 
+# 121. 买卖股票的最佳时机 只能买卖一次股票
+def maxProfit_once( prices: list[int]) -> int:
+    if not prices: return 0
+    maxPro=0
+    minPro=float("inf")
+    for p in prices:
+        if p < minPro:
+            minPro=p
+        maxPro=max(p-minPro,maxPro)
+    return maxPro
+
+# 122. 买卖股票的最佳时机 II  可以多次买卖股票
 def maxProfit( prices: list[int]) -> int:
     res = 0
     for i in range(1, len(prices)):
@@ -241,7 +327,7 @@ def maxProfit2_ditui( prices: list[int]) -> int:
 # prices = [7,1,5,3,6,4]
 # print(maxProfit2_ditui(prices))
 
-# 188. 买卖股票的最佳时机 IV
+# 188. 买卖股票的最佳时机 IV —— 最多可以完成 k 笔交易
 def maxProfitIV(k: int, prices: list[int]) -> int:
     n=len(prices)
     @cache
@@ -431,8 +517,8 @@ def maximumTotalDamage( power: list[int]) -> int:
 # print(maximumTotalDamage(power))
 
 # LCP 34. 二叉树染色
-def maxValue(root: TreeNode, k: int) -> int:
-    def dfs(node,k):
-        if node is None:
-            return 0
-        i
+# def maxValue(root: TreeNode, k: int) -> int:
+#     def dfs(node,k):
+#         if node is None:
+#             return 0
+#         i

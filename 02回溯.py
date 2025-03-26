@@ -1,15 +1,37 @@
 # time: 2025/2/8 10:54
 # author: YanJP
 
+# ------------回溯可分为子集型回溯、组合型回溯、排列型回溯-------------------------
+
+# 17. 电话号码的字母组合
+# 计算复杂度分析：对于每个字母组合，需要执行一次递归调用。字母组合的数量最大为4^n
+# 每次递归中，主要操作是更新 path[i] 和将 path 转换为字符串。这些操作的时间复杂度是 O(n)。
+# 因此，时间复杂度是 O(n * 4^n)。
+def letterCombinations(digits: str) :
+    ans=[]
+    n=len(digits)
+    if len(digits) == 0:
+        return []
+    Phone = ['', '', 'abc', 'def', 'ghi', 'jkl', 'mno', 'pqrs', 'tuv', 'wxyz']
+    path=['']*n
+    def dfs(i):
+        if i==n:
+            ans.append(''.join(path))
+            return
+        for c in Phone[int(digits[i])]:
+            path[i]=c
+            # 因为每次递归到 i，一定会修改 path【i】，那么递归到终点时，每个 path【i】 都被覆盖成要枚举的字母，所以不需要恢复现场。
+            dfs(i+1)
+    return ans
+
 # 78. 子集
-def subsets(self, nums):
+# 时间复杂度取决于生成的所有可能的子集的数量和每次递归的时间复杂度。时间复杂度O(n*2^n)
+def subsets(self, nums):  # 从结果的角度进行回溯
     ans = []
     path = [] # 全局变量，所有后面要用copy ()
     n = len(nums)
     def dfs(i):
         ans.append(path.copy())  #  每执行一次dfs，都会得到一个结果
-        if i == n:
-            return
         for j in range(i, n): # 这里可以避免子集重复
             path.append(nums[j])
             dfs(j + 1)
@@ -17,7 +39,7 @@ def subsets(self, nums):
     dfs(0)
     return ans
 
-def subsets2(self, nums):  # 不同的写法
+def subsets2(self, nums):  # 不同的写法 从输入的角度（选还是不选）进行回溯 时间复杂度O(n*2^n)
     ans = []
     path = []
     n = len(nums)
@@ -25,9 +47,7 @@ def subsets2(self, nums):  # 不同的写法
         if i == n:
             ans.append(path.copy())
             return
-
         dfs(i + 1)  # 两种情况（选择当前元素进行回溯，或不选择）
-
         path.append(nums[i])
         dfs(i + 1)
         path.pop()
@@ -73,7 +93,7 @@ def partition2( s: str):
 # inp_=input().strip()
 # print(partition2(inp_))
 
-# 77. 组合
+# 77. 组合  (组合回溯问题）
 def combine(n: int, k: int):
     ans = []
     path=[]
@@ -91,7 +111,7 @@ def combine(n: int, k: int):
             path.pop()
     dfs(1)
     return ans
-def combine2(n: int, k: int): # 从大到小选
+def combine2(n: int, k: int): # 从大到小选  时间复杂度：叶子节点有Cnk，路径长度为k，所以时间复杂度是O(k*Cnk)
     ans = []
     path=[]
     def dfs(i):
@@ -106,6 +126,21 @@ def combine2(n: int, k: int): # 从大到小选
             path.append(j)
             dfs(j-1)
             path.pop()
+    dfs(n)
+    return ans
+def combine3(n: int, k: int):  # 使用选和不选的思路解决
+    ans = []
+    path = []
+    def dfs(i):
+        d = k - len(path)
+        if d == 0:
+            ans.append(path[:])
+            return
+        if i > d:  # 很关键啊
+            dfs(i - 1)
+        path.append(i)
+        dfs(i - 1)
+        path.pop()
     dfs(n)
     return ans
 # n,k=map(int,input().strip().split())
@@ -128,10 +163,26 @@ def combinationSum3(k,n):
             path.pop()
     dfs(9,n)
     return ans
+def combinationSum3_2(k,n):  # 选或者不选的思路
+    ans = []
+    path = []
+    def dfs(i, t):
+        d = k - len(path)
+        if t < 0 or t > (i * 2 - d + 1) * d // 2: return  # 必须加上后面这个剪枝条件，不然会maxrecursion error
+        if t == 0 and d == 0:
+            ans.append(path[:])
+            return
+        if i > d: dfs(i - 1, t)
+        path.append(i)
+        dfs(i - 1, t - i)
+        path.pop()
+
+    dfs(9, n)
+    return ans
 # k,n=map(int,input().strip().split())
 # print(combinationSum3(k,n))
 
-# 22. 括号生成
+# 22. 括号生成  时间复杂度O(n*C(2n,n))
 def generateParenthesis(n: int):
     m=2*n
     ans=[]
@@ -169,6 +220,9 @@ def generateParenthesis2(n: int):
 # n=int(input().strip())
 # print(generateParenthesis(n))
 
+
+# 排列型回溯问题 （典型：N皇后）
+# 和组合回溯的区别：{1,2}和{2,1}是同一种组合，但是排列型回溯问题中，{1,2}和{2,1}是不同的排列。
 # 46. 全排列
 def permute(nums: list[int]):
     ans=[]
@@ -182,13 +236,30 @@ def permute(nums: list[int]):
             dfs(i+1,s-{j}) # s-{j}表示删除当前元素，避免重复 s.copy().remove(j)
     dfs(0,set(nums))
     return ans
+def permute2(nums: list[int]):
+    ans=[]
+    n=len(nums)
+    path=[0]*n
+    on_path=[False]*n
+    def dfs(i):
+        if i==n:
+            ans.append(path[:])
+            return
+        for j in range(n):
+            if not on_path[j]:
+                path[i] = nums[j]
+                on_path[j] = True
+                dfs(i + 1)
+                on_path[j] = False
+    dfs(0)
+    return ans
 # nums=list(map(int,input().strip().split()))
 # print(permute(nums))
 
 # 51. N 皇后
 def solveNQueens( n: int):
     ans = []
-    col = [0] * n  # 每一个元素记录皇后在第i行，第col[i]列
+    col = [0] * n  # 每一个元素记录皇后在第i行，第col[i]列    # 第i个元素的值 == 第i行的皇后所在的列
     def valid(row,c):
         for former_r in range(row):
             former_col=col[former_r]

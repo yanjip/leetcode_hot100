@@ -40,8 +40,8 @@ def trap(height: list[int]) -> int:
             ans+= (min(left_h,h)-botton_height)*(i-st[-1]-1)
         st.append(i)
     return ans
-# height = [0,1,0,2,1,0,1,3,2,1,2,1]
-# print(trap(height))
+height = [0,1,0,2,1,0,1,3,2,1,2,1]
+print(trap(height))
 
 # 239. 滑动窗口最大值 （单调队列）
 def maxSlidingWindow(nums: list[int], k: int) -> list[int]:

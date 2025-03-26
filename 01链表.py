@@ -6,6 +6,34 @@ class ListNode():
         self.val = val
         self.next = next
 
+# 206. 反转链表
+def reverseList( head):
+    pre = None
+    cur = head
+    while cur:
+        nxt = cur.next
+        cur.next = pre
+        pre = cur
+        cur = nxt
+    return pre
+
+# 92. 反转链表 II
+def reverseBetween(head, left, right):
+    dummy = ListNode(next=head)
+    p0 = dummy
+    for _ in range(left - 1):
+        p0 = p0.next
+    pre = None
+    cur = p0.next
+    for _ in range(right - left + 1):
+        nxt = cur.next
+        cur.next = pre
+        pre = cur
+        cur = nxt
+    p0.next.next = cur  #
+    p0.next = pre
+    return dummy.next
+
 # 141. 环形链表
 def hasCycle(head: ListNode) -> bool:
     fast=head
@@ -39,17 +67,6 @@ def detectCycle(head: ListNode) -> ListNode:
             return slow
     return None
 
-def removeNthFromEnd(self, head: [ListNode], n: int):
-    dummy=ListNode(next=head)
-    right=dummy
-    for _ in range(n):
-        right=right.next
-    left=dummy
-    while right.next:
-        left=left.next
-        right=right.next
-    left.next=left.next.next
-    return dummy
 
 # 82. 删除排序链表中的重复元素 II
 def deleteDuplicates(head):
@@ -64,3 +81,57 @@ def deleteDuplicates(head):
             cur = cur.next
     return dummy.next  # 注意注意！！！
 
+# 19. 删除链表的倒数第 N 个结点
+def removeNthFromEnd(head, n: int):
+    dummy=ListNode(next=head)
+    right=dummy
+    for _ in range(n):
+        right=right.next
+    left=dummy
+    while right.next:
+        left=left.next
+        right=right.next
+    left.next=left.next.next
+    return dummy.next
+
+# 24. 两两交换链表中的节点
+def swapPairs( head ):
+    node0=dummy=ListNode(next=head)
+    node1=head
+    while node1 and node1.next:
+        node2=node1.next
+        node3=node2.next
+
+        node0.next=node2
+        node2.next=node1
+        node1.next=node3
+
+        node0=node1
+        node1=node3
+    return dummy.next
+
+# LGH 美团一面手撕
+def reverseKGroup(head: ListNode, k: int):
+    # 创建一个哑节点(dummy node)，它的next指向head
+    dummy = ListNode(0)
+    dummy.next = head
+    # prev指针用于帮助反转子链表
+    prev = dummy
+    while True:
+        # 检查是否还有至少k个节点剩余，如果不是，则直接返回结果
+        check = prev
+        for i in range(k):
+            check = check.next
+            if not check:
+                return dummy.next
+        # 反转k个节点
+        start = prev.next  # 反转部分的开始节点
+        then = start.next  # start之后的节点
+        for i in range(k - 1):
+            start.next = then.next
+            then.next = prev.next
+            prev.next = then
+            then = start.next
+        # 更新prev指针为start，即本轮反转部分的新尾部
+        prev = start
+    # return dummy.next
