@@ -135,3 +135,27 @@ def reverseKGroup(head: ListNode, k: int):
         # 更新prev指针为start，即本轮反转部分的新尾部
         prev = start
     # return dummy.next
+
+# 21. 合并两个有序链表
+def mergeTwoLists(list1 , list2 ) :
+    cur=dummy=ListNode()
+    while list1 and list2:
+        if list1.val<list2.val:
+            cur.next=list1
+            list1=list1.next
+        else:
+            cur.next=list2
+            list2=list2.next
+        cur=cur.next
+    cur.next=list1 if list1 else list2
+    return dummy.next
+
+# 876. 链表的中间结点
+# 找出并返回链表的中间结点。如果有两个中间结点，则返回第二个中间结点。
+def middleNode(head):
+    fast=head
+    slow=head
+    while fast and fast.next:
+        fast=fast.next.next
+        slow=slow.next
+    return slow

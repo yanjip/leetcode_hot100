@@ -9,8 +9,8 @@ import sys
 # 2. 一组以空格分隔的整数或浮点数
 # a = [int(i) for i in input().strip().split()]
 # print(a)
-numbers = list(map(int, input().strip().split()))
-print(numbers)
+# numbers = list(map(int, input().strip().split()))
+# print(numbers)
 
 # 3. 多组输入直到EOF（文件结束）
 # for line in sys.stdin:
@@ -28,17 +28,29 @@ print(numbers)
 #     print(' '.join(str(x) for x in row))
 
 # # 5. 字符串输入
-s = input().strip()
-print(s)
+# s = input().strip()
+# print(s)
+
+# # 6. 读取一行
+# lst = list(map(int, sys.stdin.readline().strip().split()))
+# data = sys.stdin.read().split()
+
+# #7. 读取所有输入行
+# input = sys.stdin.read().split()
+# T = int(input[0]) #笫一行是测试组数
+# for t in range(1, T + 1):
+#     n = int(input[t])
 
 
-# 6. 读取一行
-lst = list(map(int, sys.stdin.readline().strip().split()))
-data = sys.stdin.read().split()
-
-#7. 读取所有输入行
-input = sys.stdin.read().split()
-T = int(input[0]) #笫一行是测试组数
-for t in range(1, T + 1):
-    n = int(input[t])
-
+import time
+def timer(func):
+    def inner(*args,**kwargs):
+        start = time.time()
+        func(*args, **kwargs)
+        print("运行时间：",time.time() -start)
+    return inner
+@timer
+def test(a,b):
+    print(a+b)
+    time.sleep(1)
+test(1,5,a=3)

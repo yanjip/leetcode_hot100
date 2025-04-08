@@ -1,22 +1,15 @@
 # time: 2025/2/24 11:07
 # author: YanJP
 from collections import defaultdict,Counter
+from functools import cache
+
 class ListNode:
     def __init__(self, val=0, next=None):
         self.val = val
         self.next = next
 
-# 560. 和为 K 的子数组（前缀和、哈希表）
+# 560. 和为 K 的子数组（前缀和、哈希表）  注：子数组和子串是连续的，子序列不连续
 def subarraySum( nums: list[int], k: int) -> int:
-    # ans=0
-    # for i in range(len(nums)):
-    #     s = 0
-    #     for j in range(i,len(nums)):
-    #         s+=nums[j]
-    #         if s==k:
-    #             ans+=1
-    # return ans
-
     #  如     1 1 0 1 1，k=2
     # 前缀和:0 1 2 2 3 4, 第二个2减0=2,得到一个子数组; 4减第一个2=2，得到一个子数组; 4-第二个2=2，得到一个子数组;...
     s=[0] * (len(nums)+1)
@@ -140,3 +133,231 @@ def numIslands(grid: list[list[str]]) -> int:
                 dfs(i,j)
                 ans+=1
     return ans
+
+# 32. 最长有效括号  栈+贪心
+def longestValidParentheses(s: str) -> int:
+    stack=[]
+    maxL=0
+    n=len(s)
+    tmp=[0]*n
+    for i in range(n):
+        if s[i]=='(':
+            stack.append(i)
+        else:
+            if stack:
+                j=stack.pop()
+                tmp[i], tmp[j]=1, 1
+    curL=0
+    for num in tmp:
+        if num:
+            curL+=1
+            maxL=max(maxL, curL)
+        else: curL=0
+    return maxL
+def longestValidParentheses2(s: str) -> int:
+    ans = 0
+    stack = []
+    for i, c in enumerate(s):
+        if stack and s[stack[-1]] == '(' and c == ')': # 这样写要简洁一点
+            stack.pop()
+            if not stack:
+                ans = max(ans, i + 1)
+            else:
+                ans = max(ans, i - stack[-1])
+        else:
+            stack.append(i)
+    return ans
+
+# 118. 杨辉三角
+def generate( numRows: int) :
+    ans=[[0]*i for i in range(1,numRows+1)]
+    for i in range(numRows):
+        ans[i][0]=ans[i][-1]=1
+    for i in range(2,numRows):
+        for j in range(1,i):
+            ans[i][j]=ans[i-1][j-1]+ans[i-1][j]
+    print(ans)
+    return ans
+# generate(5)
+
+# 139. 单词拆分
+# 本题状态个数等于 O(n)，单个状态的计算时间为 O(L^2)（L=wordDict中最长的字符串长度，注意判断子串是否在哈希集合中需要 O(L) 的时间），
+# 所以记忆化搜索的时间复杂度为 O(nL^2)
+def wordBreak(s: str, wordDict) -> bool:
+    max_L=max(map(len, wordDict))
+    wordDict=set(wordDict)
+    # dfs(i)，表示能否把前缀 s[:i]（表示 s[0] 到 s[i−1] 这段子串）划分成若干段，使得每段都在 wordDict 中。
+    @cache
+    def dfs(i):
+        if i==0:
+            return True
+        for j in range(i-1, max(i-max_L-1, -1),-1): # j的最小值就是取到0，范围是倒序的
+            if s[j:i] in wordDict and dfs(j):
+                return True
+        return False
+    return dfs(len(s))
+
+def wordBreak_dp(s: str, wordDict) -> bool:
+    max_L = max(map(len, wordDict))
+    wordDict = set(wordDict)
+    n = len(s)
+    dfs = [True] + [False] * n
+    for i in range(1, n + 1): # 注意这里是n+1，因为s[n]取不到最后一个字符
+        for j in range(i - 1, max(i - max_L - 1, -1), -1):
+            if s[j:i] in wordDict and dfs[j]:
+                dfs[i] = True
+                break # 这里必须break
+    return dfs[n]
+
+# 79. 单词搜索
+# 总结：自己写忽略了三个问题：一是什么时候返回True没写明白；二是递归入口是由mn种情况；三是剪枝的判断board[i][j]!=word[k]时就可直接返回False了
+# 时间复杂度:O(mn3^k)，其中 m和n分别为grid 的行数和列数，k是word 的长度。
+# 除了递归入口，其余递归至多有3个分支(因为至少有一个方向是之前走过的)，所以每次递归(回溯)的时间复杂度为O(3^k)，
+# 一共回溯O(mn)次，所以时间复杂度为O(mn3^k)。
+def exist( board, word: str) -> bool:
+    lens=len(word)
+    m,n=len(board), len(board[0])
+    def dfs(i,j,k):
+        if i<0 or i>=m or j<0 or j>=n or board[i][j]!=word[k]:
+            return False
+        if  k==lens-1:
+            return True
+        board[i][j]=1
+        ans=dfs(i+1,j,k+1) or dfs(i-1,j,k+1) or dfs(i,j+1,k+1) or  dfs(i,j-1,k+1)
+        board[i][j]=word[k]
+        return ans
+    ans=False
+    for i in range(m):
+        for j in range(n):
+            ans=ans or dfs(i,j,0)
+    return ans
+
+def exist2(board, word: str) -> bool:
+    m, n = len(board), len(board[0])
+    def dfs(i: int, j: int, k: int) -> bool:
+        if board[i][j] != word[k]:  # 匹配失败
+            return False
+        if k == len(word) - 1:  # 匹配成功！
+            return True
+        board[i][j] = ''  # 标记访问过
+        for x, y in (i, j - 1), (i, j + 1), (i - 1, j), (i + 1, j):  # 相邻格子
+            if 0 <= x < m and 0 <= y < n and dfs(x, y, k + 1):
+                return True  # 搜到了！
+        board[i][j] = word[k]  # 恢复现场
+        return False  # 没搜到
+    return any(dfs(i, j, 0) for i in range(m) for j in range(n))
+
+# 152. 乘积最大子数组
+def maxProduct( nums: list[int]) -> int:
+    n = len(nums)
+    @cache
+    def dfs(i: int) -> tuple:
+        """ 返回以 nums[i] 结尾的 (最大乘积, 最小乘积) """
+        if i == 0:
+            return nums[0], nums[0]
+        prev_max, prev_min = dfs(i - 1)
+        # 由于 nums[i] 可能是负数，需要考虑翻转
+        cur_max = max(nums[i], nums[i] * prev_max, nums[i] * prev_min)
+        cur_min = min(nums[i], nums[i] * prev_max, nums[i] * prev_min)
+        return cur_max, cur_min
+    return max(dfs(i)[0] for i in range(n))
+
+def maxProduct2(nums: list[int]) -> int:
+    n = len(nums)
+    dfs = [[0] * 2 for _ in range(n)]
+    dfs[0][0] = dfs[0][1] = nums[0]
+    for i in range(n - 1):
+        dfs[i + 1][0] = max(nums[i + 1], nums[i + 1] * dfs[i][0], nums[i + 1] * dfs[i][1])
+        dfs[i + 1][1] = min(nums[i + 1], nums[i + 1] * dfs[i][0], nums[i + 1] * dfs[i][1])
+    return max(dfs[i][0] for i in range(n))
+
+    # dfs = [[0] * 2 for _ in range(n)]
+    # dfs[0][0] = dfs[0][1] = nums[0]
+    # for i in range(1, n):                                 区别在于这里的取值和下面的nums[i]还是nums[i+1]
+    #     dfs[i][0] = max(nums[i], nums[i] * dfs[i - 1][0], nums[i] * dfs[i - 1][1])
+    #     dfs[i][1] = min(nums[i], nums[i] * dfs[i - 1][0], nums[i] * dfs[i - 1][1])
+    # return max(dfs[i][0] for i in range(n))             也是对的
+
+# 53. 最大子数组和 (腾讯面试题）
+def maxSubArray( nums: list[int]) -> int:
+    ans = -float("inf")
+    min_pre_sum = pre_sum = 0
+    for x in nums:
+        pre_sum += x
+        ans = max(ans, pre_sum - min_pre_sum)
+        min_pre_sum = min(pre_sum, min_pre_sum)
+    return ans
+
+from functools import cache
+def maxSubArray_dfs(nums: list[int]) -> int:
+    n = len(nums)
+    @cache
+    def dfs(i):  # dfs定义为以 nums[i] 结尾的连续子数组的最大和
+        if i == 0: return nums[i] # 因为子数组至少包含一个数
+        return max(dfs(i - 1) + nums[i], nums[i])  # 和下面等价，+nums[i]可以卸载max函数后面
+    return max(dfs(i) for i in range(n))
+def maxSubArray_dp( nums: list[int]) -> int:
+    f = [0] * len(nums)  # f[i] 表示以 nums[i] 结尾的连续子数组的最大和
+    f[0] = nums[0]
+    for i in range(1, len(nums)):
+        f[i] = max(f[i - 1], 0) + nums[i]
+    return max(f)
+
+# 62. 不同路径
+def uniquePaths(m: int, n: int) -> int:
+    # @cache  # 缓存装饰器，避免重复计算 dfs 的结果（一行代码实现记忆化）
+    # def dfs(i: int, j: int) -> int:
+    #     if i < 0 or j < 0:
+    #         return 0
+    #     if i == 0 and j == 0:
+    #         return 1
+    #     return dfs(i - 1, j) + dfs(i, j - 1)
+    #
+    # return dfs(m - 1, n - 1)
+
+    f = [[0] * (n + 1) for _ in range(m + 1)]
+    f[1][1] = 1 # 也可以写成 f[0][1] = 1，这样就不需要下面判断i==0 and j==0
+    for i in range(m):
+        for j in range(n):
+            if i == 0 and j == 0:
+                continue
+            f[i + 1][j + 1] = f[i][j + 1] + f[i + 1][j]  # 由于+1，所以f[1][1]其实等价于上面的dfs(0,0)
+    return f[m][n]
+
+# 22. 括号生成  时间复杂度O(n*C(2n,n))
+def generateParenthesis(n: int):
+    m=2*n
+    ans=[]
+    path=['']*m
+    def dfs(i,cont_left):
+        if i==m:
+            ans.append(''.join(path))
+            return
+        if cont_left<n:
+            path[i]='('
+            dfs(i+1,cont_left+1)
+        if i-cont_left<cont_left: #右括号的个数小于左括号的个数
+            path[i]=')'
+            dfs(i+1,cont_left)
+    dfs(0,0)
+    return ans
+def generateParenthesis2(n: int):
+    m=2*n
+    ans=[]
+    path=[]
+    def dfs(i,cont_left):
+        if i==m:
+            ans.append(''.join(path))
+            return
+        if cont_left<n:
+            path.append('(')
+            dfs(i+1,cont_left+1)
+            path.pop()  #注意，这里也要pop恢复现场
+        if i-cont_left<cont_left: #右括号的个数小于左括号的个数
+            path.append=(')')
+            dfs(i+1,cont_left)
+            path.pop()
+    dfs(0,0)
+    return ans
+# n=int(input().strip())
+# print(generateParenthesis(n))

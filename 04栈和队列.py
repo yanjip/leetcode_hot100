@@ -1,9 +1,13 @@
 # time: 2025/2/27 9:59
 # author: YanJP
 from collections import deque
-
+# 单调栈：要计算的内容涉及到上一个或者下一个更大或者更小的元素
 
 # 739. 每日温度
+# 每个元素入栈至多1次，出栈也是至多一次，因此时间复杂度O(n)
+# 返回一个数组 answer ，其中 answer[i] 是指对于第 i 天，下一个更高温度出现在几天后。如果气温在这之后都不会升高，请在该位置用 0 来代替。
+# 输入: temperatures = [30,40,50,60]
+# 输出: [1,1,1,0]
 def dailyTemperatures(temperatures: list[int]) -> list[int]:
     st=[] # 单调栈  存放下标
     ans=[0]*len(temperatures)
@@ -26,6 +30,8 @@ def dailyTemperatures_forword(temperatures: list[int]) -> list[int]:
     return ans
 # temperatures=list(map(int,input().strip().split(',')))
 # print(dailyTemperatures_forword(temperatures))
+
+
 
 # 42. 接雨水
 def trap(height: list[int]) -> int:
@@ -56,3 +62,23 @@ def maxSlidingWindow(nums: list[int], k: int) -> list[int]:
         if i>=k-1:
             ans.append(nums[q[0]])
     return ans
+
+# 394. 字符串解码
+# 输入：s = "3[a]2[bc]"
+# 输出："aaabcbc"
+def decodeString( s):
+    stack=[]
+    res=""
+    num=0
+    for c in s:
+        if c.isdigit():
+            num=num*10+int(c)
+        elif c=='[':
+            stack.append((res, num))
+            res,num="", 0
+        elif c==']':
+            pre_res, pre_num=stack.pop()
+            res=pre_res+res*pre_num
+        else:
+            res+=c
+    return res

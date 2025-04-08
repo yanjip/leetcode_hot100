@@ -22,11 +22,12 @@ def letterCombinations(digits: str) :
             path[i]=c
             # 因为每次递归到 i，一定会修改 path【i】，那么递归到终点时，每个 path【i】 都被覆盖成要枚举的字母，所以不需要恢复现场。
             dfs(i+1)
+    dfs(0)
     return ans
 
 # 78. 子集
 # 时间复杂度取决于生成的所有可能的子集的数量和每次递归的时间复杂度。时间复杂度O(n*2^n)
-def subsets(self, nums):  # 从结果的角度进行回溯
+def subsets( nums):  # 从结果的角度进行回溯
     ans = []
     path = [] # 全局变量，所有后面要用copy ()
     n = len(nums)
@@ -147,7 +148,47 @@ def combine3(n: int, k: int):  # 使用选和不选的思路解决
 # print(combine2(n,k))
 
 
+# 39. 组合总和
+# 给你一个 无重复元素 的整数数组 candidates 和一个目标整数 target ，
+# 找出 candidates 中可以使数字和为目标数 target 的 所有 不同组合 ，并以列表形式返回。你可以按 任意顺序 返回这些组合。
+# [2,2,3]和[2,3,2]属于一种组合
+def combinationSum( candidates, target: int) :
+    ans = []
+    path = []
+    n = len(candidates)
+    def dfs(start, s):
+        if s==target:
+            ans.append(path[:])
+            return
+        if s>target: return
+        for j in range(start, n):
+            path.append(candidates[j])
+            dfs(j,s+candidates[j])
+            path.pop()
+    dfs(0, 0)
+    return ans
+def combinationSum2( candidates, target: int):
+    ans = []
+    path = []
+    n = len(candidates)
+    def dfs(i, s):
+        if s == target:
+            ans.append(path[:])
+            return
+        if s > target or i == n: return
+        dfs(i + 1, s)
+        # 选择当前的数
+        path.append(candidates[i])
+        dfs(i, s + candidates[i])
+        path.pop()
+    dfs(0, 0)
+    return ans
+
 # 216. 组合总和 III
+# 找出所有相加之和为 n 的 k 个数的组合，且满足下列条件：
+# 只使用数字1到9；每个数字 最多使用一次
+# 输入: k = 3, n = 7
+# 输出: [[1,2,4]]
 def combinationSum3(k,n):
     ans=[]
     path=[]
@@ -219,6 +260,7 @@ def generateParenthesis2(n: int):
     return ans
 # n=int(input().strip())
 # print(generateParenthesis(n))
+
 
 
 # 排列型回溯问题 （典型：N皇后）

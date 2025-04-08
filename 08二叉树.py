@@ -257,3 +257,37 @@ def pathSum(root, targetSum: int) -> int:
         total+=double(node.right)
         return total
     return double(root)
+from collections import defaultdict
+# 前缀和解法
+def pathSum2(root, targetSum: int) -> int:
+    ans = 0
+    cnt = defaultdict(int)
+    cnt[0] = 1  # 类似560的解法
+
+    def dfs(node, s):
+        if node is None:
+            return
+        nonlocal ans
+        s += node.val
+        ans += cnt[s - targetSum]
+        cnt[s] += 1
+        dfs(node.left, s)
+        dfs(node.right, s)
+        cnt[s] -= 1
+
+    dfs(root, 0)
+    return ans
+
+# 543. 二叉树的直径  时空复杂度均为O(n)
+def diameterOfBinaryTree(root: TreeNode) -> int:
+    ans=0
+    def dfs(node):
+        if node is None:
+            return -1
+        left_len=dfs(node.left)+1
+        right_len=dfs(node.right)+1
+        nonlocal ans
+        ans=max(ans,left_len+right_len) # 以当前节点拐弯的最长路径
+        return max(left_len,right_len)  # 要思考返回的到底是什么？dfs(node)的目的是获取以node为子节点的最大深度(不拐弯)，所以返回的是left_len和right_len中的较大值
+    dfs(root)
+    return ans
