@@ -361,3 +361,87 @@ def generateParenthesis2(n: int):
     return ans
 # n=int(input().strip())
 # print(generateParenthesis(n))
+
+# 5. 最长回文子串
+# 输入：s = "babad"
+# 输出："bab"
+# 解释："aba" 同样是符合题意的答案。
+def longestPalindrome( s: str) -> str:
+    n = len(s)
+    length = 1 # 最长回文子串的长度
+    start = 0  # 最长回文子串的起始位置
+    dp = [[False] * n for _ in range(n)]    # dp[j][i]表示子串s[j:i]是否为回文串
+    for i in range(n):
+        # 以i为终点，往回枚举起点j
+        for j in range(i, -1, -1):
+            if i == j:
+                dp[j][i] = True    # 一个字符，一定为回文串
+            elif i == j + 1:
+                dp[j][i] = (s[i] == s[j])  # 两个字符，取决于二者是否相等
+            else:
+                dp[j][i] = (s[i] == s[j]) and dp[j+1][i-1]  # 两个字符以上，首先端点两个字符要相等，其次[j+1, i-1]也要为回文串
+            # [j,i]为回文串且长度更大，更新
+            if dp[j][i] and (i - j + 1) > length:
+                length = i - j + 1
+                start = j
+        return s[start: start + length] # 截取最长回文子串
+
+# 169. 多数元素
+# 给定一个大小为 n 的数组 nums ，返回其中的多数元素。多数元素是指在数组中出现次数 大于 ⌊ n/2 ⌋ 的元素。
+def majorityElement( nums:list[int]) -> int:
+    # 投票法
+    votes=0
+    ans=0
+    for x in nums:
+        if votes==0: ans=x
+        if x==ans:
+            votes+=1
+        else:
+            votes-=1
+    return ans
+
+# 75. 颜色分类
+# 给定一个包含红色、白色和蓝色、共 n 个元素的数组 nums ，原地 对它们进行排序，使得相同颜色的元素相邻，并按照红色、白色、蓝色顺序排列。
+# 我们使用整数 0、 1 和 2 分别表示红色、白色和蓝色。
+def sortColors( nums: list[int]) -> None:
+    # 维护两个指针，分别指向0和2
+    p0,i,p2=0,0,len(nums)-1
+    while i<=p2:
+        if nums[i]==0:
+            nums[i],nums[p0]=nums[p0],nums[i]
+            p0+=1
+            i+=1
+        elif nums[i]==2:
+            nums[i],nums[p2]=nums[p2],nums[i]
+            p2-=1
+        else:
+            i+=1
+
+# 31. 下一个排列
+# 输入：nums = [1,7,3,5,4,2,1]
+# 输出：[1,7,4, 1,2,3,5]
+class Solution:
+    def nextPermutation(self, nums:list[int]) -> None:
+        n = len(nums)
+
+        # 第一步：从右向左找到第一个小于右侧相邻数字的数 nums[i] (即i指向3,且i后面的元素一定是单调递减的： [1,7,|3|,5,4,2,1]）
+        i = n - 2
+        while i >= 0 and nums[i] >= nums[i + 1]:
+            i -= 1
+
+        # 如果找到了，进入第二步；否则跳过第二步，反转整个数组
+        if i >= 0:
+            # 第二步：从右向左找到 nums[i] 右边最小的大于 nums[i] 的数 nums[j]
+            j = n - 1
+            while nums[j] <= nums[i]:
+                j -= 1
+            # 交换 nums[i] 和 nums[j]
+            nums[i], nums[j] = nums[j], nums[i]     # 找到满足nums[j] > nums[i]的数，即4，交换后变成[1,7,|4|,5,|3|,2,1]
+
+        # 第三步：反转 nums[i+1:]（如果上面跳过第二步，此时 i = -1）  翻转数组，变成[1,7,4, 1,2,3,5]
+        # nums[i+1:] = nums[i+1:][::-1] 这样写也可以，但空间复杂度不是 O(1) 的
+        left, right = i + 1, n - 1
+        while left < right:
+            nums[left], nums[right] = nums[right], nums[left]
+            left += 1
+            right -= 1

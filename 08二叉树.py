@@ -1,11 +1,39 @@
 # time: 2025/3/14 11:10
 # author: YanJP
+from typing import Optional
+
 
 class TreeNode(object):
     def __init__(self, val=0, left=None, right=None):
         self.val = val
         self.left = left
         self.right = right
+# 104. 二叉树的最大深度
+def maxDepth(root: Optional[TreeNode]) -> int:
+    if root is None:
+        return 0
+    left=maxDepth(root.left)
+    right=maxDepth(root.right)
+    return max(left,right)+1
+def maxDepth2(root: Optional[TreeNode]) -> int:
+    ans = 0
+    def dfs(node, cnt):
+        if node is None:
+            return
+        cnt += 1
+        nonlocal ans
+        ans = max(cnt, ans)
+        dfs(node.left, cnt)
+        dfs(node.right, cnt)
+    dfs(root, 0)
+    return ans
+
+#100. 相同的树
+class Solution:
+    def isSameTree(self, p: Optional[TreeNode], q: Optional[TreeNode]) -> bool:
+        if p is None or q is None:
+            return q is p
+        return p.val==q.val and self.isSameTree(p.left, q.left) and self.isSameTree(p.right,q.right)
 
 # 199. 二叉树的右视图
 def rightSideView(root):
@@ -39,6 +67,7 @@ def isValidBST(root,left=float('-inf'),right=float('inf')):
     if root is None:
         return True
     x=root.val
+    # 利用 and 的短路特性，当左子树不合法时，直接跳过右子树的检查。因此，已经是剪枝的做法了
     return left<x<right and isValidBST(root.left, left,x) and isValidBST(root.right,x,right)
 # 中序遍历
 def isValidBST2(root):
@@ -57,9 +86,7 @@ def isValidBST2(root):
 
 # 236. 二叉树的最近公共祖先
 def lowestCommonAncestor(root: TreeNode, p: TreeNode, q: TreeNode) -> TreeNode:
-    if root is None:
-        return None
-    if root==p or root==q:
+    if root is None or root==p or root==q:
         return root
     # 2. 在左右子树中递归查找
     left = lowestCommonAncestor(root.left, p, q)
@@ -68,23 +95,18 @@ def lowestCommonAncestor(root: TreeNode, p: TreeNode, q: TreeNode) -> TreeNode:
     if left and right:
         # p 和 q 分别在左右子树，则当前 root 即为最近公共祖先
         return root
-    else:
-        # 只有一侧非空，则返回非空的那侧
-        return left if left else right
+    # 只有一侧非空，则返回非空的那侧
+    return left if left else right
 
 # 235. 二叉搜索树的最近公共祖先
 def lowestCommonAncestor_search_Tree(root, p, q):
-    """
-    :type root: TreeNode
-    :type p: TreeNode
-    :type q: TreeNode
-    :rtype: TreeNode
-    """
+    # 注意，相比于上一题，该解法是先判断后递归；
+    # 不需要判断当前节点值是否为空。因为题目规定p q都在树中，因此，按照以下递归方式，一定能找到p和q，或者说不可能递归到空节点
     x = root.val
-    if x<p.val and x<q.val:
-        return lowestCommonAncestor(root.right,p,q)
     if x>p.val and x>q.val:
         return lowestCommonAncestor(root.left,p,q)
+    if x<p.val and x<q.val:
+        return lowestCommonAncestor(root.right,p,q)
     return root
 
 # 94. 二叉树的中序遍历
@@ -151,6 +173,7 @@ def levelOrder2(root):
     return ans
 
 # 513. 找树左下角的值
+# 还是层序遍历，但每次先将右儿子入队，这样答案就是最后一次节点
 def findBottomLeftValue(root):
     q=deque([root])
     while q:
@@ -160,6 +183,18 @@ def findBottomLeftValue(root):
         if node.left:
             q.append(node.left)
     return node.val
+# 法二：使用二叉树的左视图求解
+def findBottomLeftValue2(root):
+    ans = []
+    def f(node, depth):
+        if node is None:
+            return
+        if len(ans) == depth:
+            ans.append(node.val)
+        f(node.left, depth + 1)
+        f(node.right, depth + 1)
+    f(root, 0)
+    return ans[-1]
 
 # 230. 二叉搜索树中第 K 小的元素
 def kthSmallest(root, k: int) -> int:
@@ -191,6 +226,8 @@ def kthSmallest2(root, k):
     return ans[k - 1]
 
 # 114. 二叉树展开为链表
+# 其中 right 子指针指向链表中下一个结点，而左子指针始终为 null 。
+# 展开后的单链表应该与二叉树 先序遍历 顺序相同。
 # 方法一：分治求解
 #     1
 #    / \
@@ -215,7 +252,7 @@ def flatten(root) -> None:
     return right_tail or left_tail or root  # 要注意顺序
 
 # # 方法二：头插法
-class Solution:
+class Solution2:
     head=None
     def flatten(self, root) -> None:
         if root is None:
@@ -257,6 +294,7 @@ def pathSum(root, targetSum: int) -> int:
         total+=double(node.right)
         return total
     return double(root)
+
 from collections import defaultdict
 # 前缀和解法
 def pathSum2(root, targetSum: int) -> int:

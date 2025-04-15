@@ -18,6 +18,7 @@ def reverseList( head):
     return pre
 
 # 92. 反转链表 II
+# 给你单链表的头指针 head 和两个整数 left 和 right ，其中 left <= right 。请你反转从位置 left 到位置 right 的链表节点，返回 反转后的链表 。
 def reverseBetween(head, left, right):
     dummy = ListNode(next=head)
     p0 = dummy
@@ -30,9 +31,36 @@ def reverseBetween(head, left, right):
         cur.next = pre
         pre = cur
         cur = nxt
-    p0.next.next = cur  #
-    p0.next = pre
+    p0.next.next = cur  # 注意，p0的next指向的是反转后链表的最后一个节点，此时这个节点需要指向right后面的节点，即为cur
+    p0.next = pre # 最后，再将前半段与翻转后的头结点，即pre 连接起来
     return dummy.next
+# 25. K 个一组翻转链表  每 k 个节点一组进行翻转，请你返回修改后的链表。
+# LGH 美团一面手撕
+def reverseKGroup(head: ListNode, k: int) -> ListNode:
+    n=0
+    cur=head
+    while cur:
+        n+=1
+        cur=cur.next
+    dummy=ListNode(next=head)
+    p0=dummy
+    pre=None
+    cur=p0.next
+    while n>=k:
+        n-=k
+        for _ in range(k):
+            nxt=cur.next
+            cur.next=pre
+            pre=cur
+            cur=nxt
+        nxt=p0.next
+        p0.next.next=cur
+        p0.next=pre
+        p0=nxt  # 相当于就是p0需要指向下次需要反正的K个节点的 前一个节点
+    return dummy.next
+
+
+
 
 # 141. 环形链表
 def hasCycle(head: ListNode) -> bool:
@@ -66,10 +94,41 @@ def detectCycle(head: ListNode) -> ListNode:
                 slow=slow.next
             return slow
     return None
+# --------------删除链表----------------------------
+# 237. 删除链表中的节点 不能访问头结点
+def deleteNode(node):
+    node.val=node.next.val
+    node.next=node.next.next
 
+# 19. 删除链表的倒数第 N 个结点
+# 双向指针做法
+def removeNthFromEnd(head, n: int):
+    dummy=ListNode(next=head) # 一般来说，如果需要删除头结点，就需要设置dummy node
+    right=dummy
+    for _ in range(n):
+        right=right.next
+    left=dummy
+    while right.next:  # 一直要循环到right指向最后一个节点，所以这里要写right.next
+        left=left.next
+        right=right.next
+    left.next=left.next.next
+    return dummy.next
 
+# 83. 删除排序链表中的重复元素
+# 给定一个已排序的链表的头 head ， 删除所有重复的元素，使每个元素只出现一次 。返回 已排序的链表
+def deleteDuplicates( head):
+    if head is None:
+        return head
+    cur=head
+    while cur.next:
+        if cur.val==cur.next.val:
+            cur.next=cur.next.next
+        else:
+            cur=cur.next
+    return head
 # 82. 删除排序链表中的重复元素 II
-def deleteDuplicates(head):
+# 给定一个已排序的链表的头 head ， 删除原始链表中所有重复数字的节点，只留下不同的数字 。返回 已排序的链表 。
+def deleteDuplicatesII(head):
     dummy = ListNode(next=head)
     cur = dummy
     while cur.next and cur.next.next:
@@ -80,19 +139,6 @@ def deleteDuplicates(head):
         else:
             cur = cur.next
     return dummy.next  # 注意注意！！！
-
-# 19. 删除链表的倒数第 N 个结点
-def removeNthFromEnd(head, n: int):
-    dummy=ListNode(next=head)
-    right=dummy
-    for _ in range(n):
-        right=right.next
-    left=dummy
-    while right.next:
-        left=left.next
-        right=right.next
-    left.next=left.next.next
-    return dummy.next
 
 # 24. 两两交换链表中的节点
 def swapPairs( head ):
@@ -110,31 +156,6 @@ def swapPairs( head ):
         node1=node3
     return dummy.next
 
-# LGH 美团一面手撕
-def reverseKGroup(head: ListNode, k: int):
-    # 创建一个哑节点(dummy node)，它的next指向head
-    dummy = ListNode(0)
-    dummy.next = head
-    # prev指针用于帮助反转子链表
-    prev = dummy
-    while True:
-        # 检查是否还有至少k个节点剩余，如果不是，则直接返回结果
-        check = prev
-        for i in range(k):
-            check = check.next
-            if not check:
-                return dummy.next
-        # 反转k个节点
-        start = prev.next  # 反转部分的开始节点
-        then = start.next  # start之后的节点
-        for i in range(k - 1):
-            start.next = then.next
-            then.next = prev.next
-            prev.next = then
-            then = start.next
-        # 更新prev指针为start，即本轮反转部分的新尾部
-        prev = start
-    # return dummy.next
 
 # 21. 合并两个有序链表
 def mergeTwoLists(list1 , list2 ) :

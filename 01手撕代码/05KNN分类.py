@@ -4,6 +4,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 from collections import Counter
 
+# 根据训练数据集中最接近当前样本的K个邻居来预测新样本的类别或值。
+#  在预测阶段，计算复杂度较高，因为需要计算每个新样本与所有训练样本的距离，复杂度为O(n)。
+
 # 对于每个测试样本，计算其与所有训练样本的欧氏距离。
 # 找到距离最近的 k个样本。
 # 统计这些样本的标签，返回频率最高的标签作为预测结果。

@@ -513,6 +513,30 @@ def minScoreTriangulation_ditui(values: list[int]) -> int:
             dfs[i][j]=res
     return dfs[0][-1]
 
+# 5. 最长回文子串
+# 输入：s = "babad"
+# 输出："bab"
+# 解释："aba" 同样是符合题意的答案。
+def longestPalindrome( s: str) -> str:
+    n = len(s)
+    length = 1 # 最长回文子串的长度
+    start = 0  # 最长回文子串的起始位置
+    dp = [[False] * n for _ in range(n)]    # dp[j][i]表示子串s[j:i]是否为回文串
+    for i in range(n):
+        # 以i为终点，往回枚举起点j
+        for j in range(i, -1, -1):
+            if i == j:
+                dp[j][i] = True    # 一个字符，一定为回文串
+            elif i == j + 1:
+                dp[j][i] = (s[i] == s[j])  # 两个字符，取决于二者是否相等
+            else:
+                dp[j][i] = (s[i] == s[j]) and dp[j+1][i-1]  # 两个字符以上，首先端点两个字符要相等，其次[j+1, i-1]也要为回文串
+            # [j,i]为回文串且长度更大，更新
+            if dp[j][i] and (i - j + 1) > length:
+                length = i - j + 1
+                start = j
+        return s[start: start + length] # 截取最长回文子串
+
 # ----------------------------树形动态规划------------------------------
 # 树dp通常不存在重叠子问题从而无需考虑重复计算问题，通常不需要显式地存储cache中间计算结果，子问题的解都通过递归隐式地返回给了子问题
 # 树dp和普通dp的计算的过程都是自顶向下的，即从根节点/最终目标出发，不断分解成更小的子问题直到边界，然后有些二叉树题目比如说这里的二叉树直径问题，
