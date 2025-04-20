@@ -40,6 +40,8 @@ def rob3(self, nums: list[int]) -> int:
 # print(rob(nums))
 
 #  70. 爬楼梯
+# 假设你正在爬楼梯。需要 n 阶你才能到达楼顶。
+# 每次你可以爬 1 或 2 个台阶。你有多少种不同的方法可以爬到楼顶呢？
 def climbStairs( n: int) -> int:
     # @cache
     # def dfs(i):
@@ -48,19 +50,39 @@ def climbStairs( n: int) -> int:
     #     return dfs(i-1)+dfs(i-2)
     # return dfs(n)
 
+    # dfs[i] 表示到达第 i 阶的方法数。
+    dfs = [0] * (n + 2)
+    dfs[1], dfs[0] = 1, 1
+    for i in range(n):
+        dfs[i + 2] = dfs[i + 1] + dfs[i]
+    return dfs[n] # 爬 n 阶楼梯的解应存储在 dfs[n]，而不是返回dfs[-1]。
+
+    # 以下写法也是正确的，因为其实最终只需要返回 dfs[n].
+    # 到底初始化dfs大小多少,就是看返回的值到底是 dfs[n] 还是 dfs[n+1]。
+    # dfs = [0] * (n + 1)
+    # dfs[1], dfs[0] = 1, 1
+    # for i in range(n - 1):
+    #     dfs[i + 2] = dfs[i + 1] + dfs[i]
+    # return dfs[-1] #or dfs[n]
+
     # dfs=[0]*(n+1)
-    # dfs[1],dfs[0]=1,1
-    # for i in range(0,n-1):
-    #     dfs[i+2]=dfs[i+1]+dfs[i]
+    # dfs[0]=dfs[1]=1
+    # for i in range(2,n+1):
+    #     dfs[i]=dfs[i-1]+dfs[i-2]
     # return dfs[n]
 
-    dfs=[0]*(n+1)
-    dfs[0]=dfs[1]=1
-    for i in range(2,n+1):
-        dfs[i]=dfs[i-1]+dfs[i-2]
-    return dfs[n]
-
 # 377. 组合总和 Ⅳ
+# 给你一个由 不同 整数组成的数组 nums ，和一个目标整数 target 。请你从 nums 中找出并返回总和为 target 的元素组合的个数。
+# 输入：nums = [1,2,3], target = 4
+# 输出：7
+# (1, 1, 1, 1)
+# (1, 1, 2)
+# (1, 2, 1)
+# (1, 3)
+# (2, 1, 1)
+# (2, 2)
+# (3, 1)
+# 请注意，顺序不同的序列被视作不同的组合。
 def combinationSum4(nums: list[int], target: int) -> int:
     @cache
     def dfs(i):
@@ -71,6 +93,17 @@ def combinationSum4(nums: list[int], target: int) -> int:
                 total+=dfs(i-x)
         return total
     return dfs(target )
+def combinationSum4_2(nums: list[int], target: int) -> int:
+    f = [1] + [0] * target
+    for i in range(1, target + 1):
+        total = 0
+        for x in nums:
+            if x <= i:
+                total += f[i - x]
+        f[i] = total
+    return f[target]
+
+
 
 #  01 背包问题 (选或不选） 返回能够选择的最大价值
 def zero_one_Bag(capacity, weights: list[int], values: list[int]):
@@ -123,7 +156,8 @@ def findTargetSumWays2(nums: list[int], target: int):
 # 322. 零钱兑换  完全背包问题 返回能凑成amount的最小的硬币数
 def coinChange(coins: list[int], amount: int) -> int:
     n=len(coins)
-    # def dfs(i,target):  # 回溯写法--超时
+    # @cache
+    # def dfs(i,target):
     #     if i<0:
     #         return 0 if target==0 else float("inf")
     #     if target<coins[i]:
@@ -152,6 +186,12 @@ def coinChange2(coins: list[int], amount: int) -> int:
 coins=[3,7,405,436]
 # amount=int(input().strip())
 # print(coinChange2(coins,amount))
+
+
+# 边界条件的处理：
+    # 最大价值和：返回0（无物品可选）。--状态转移使用max
+    # 最小价值和：如果c == 0，返回0；否则返回float("inf")（无解）。--状态转移使用min
+    # 方案数：如果c == 0，返回1；否则返回0（无方案）。--状态转移使用加法
 
 # 416. 分割等和子集
 # 时间复杂度：O(ns)，其中 n 是 nums 的长度，s 是 nums 的元素和（的一半）。由于每个状态只会计算一次，

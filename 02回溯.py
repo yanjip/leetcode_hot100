@@ -1,5 +1,7 @@
 # time: 2025/2/8 10:54
 # author: YanJP
+from collections import Counter
+
 
 # ------------回溯可分为子集型回溯、组合型回溯、排列型回溯-------------------------
 
@@ -27,7 +29,7 @@ def letterCombinations(digits: str) :
 
 # 78. 子集
 # 时间复杂度取决于生成的所有可能的子集的数量和每次递归的时间复杂度。时间复杂度O(n*2^n)
-def subsets( nums):  # 从结果的角度进行回溯
+def subsets(nums):  # 从结果的角度进行回溯 for循环执行
     ans = []
     path = [] # 全局变量，所有后面要用copy ()
     n = len(nums)
@@ -55,7 +57,7 @@ def subsets2(self, nums):  # 不同的写法 从输入的角度（选还是不�
     dfs(0)
     return ans
 
-# 131. 分割回文串
+# 131. 分割回文串  （更适合采用枚举选哪个的方法求解，而括号生成那题更适合选或不选的方法）
 # 输入：s = "aab"
 # 输出：[["a","a","b"],["aa","b"]]
 def partition( s: str):
@@ -67,6 +69,7 @@ def partition( s: str):
             ans.append(path.copy())
             return
         for j in range(i,n):
+            # 注意，不能写成for j in range(i+1,n) t=s[i:j]，因为最大j=n-1时，是s[i:j]=s[i:n-1],娶不到最后一个值
             t=s[i:j+1]
             if t==t[::-1]:
                 path.append(t)
@@ -96,24 +99,66 @@ def partition2( s: str):
 # inp_=input().strip()
 # print(partition2(inp_))
 
-# 77. 组合  (组合回溯问题）
-def combine(n: int, k: int):
+# 90. 子集 II
+# 输入：nums = [1,2,2]
+# 输出：[[],[1],[1,2],[1,2,2],[2],[2,2]]
+#如果直接套用子集代码，结果是： [[],[1],[1,2],[1,2,2],[1,2],[2],[2,2],[2]]
+def subsetsWithDup(nums: list[int]):
+    nums.sort()
     ans = []
-    path=[]
+    path = []
+    n = len(nums)
     def dfs(i):
-        d=k-len(path)  # 还需要选择的个数
-        # 下面是剪枝，剪掉不用的分支，减少递归次数，提高效率
-        if n-i+1<d: # n-i+1表示当前还可选的个数，比如[1,2,3| 4,5], i指向4，当前只能选择4,5 也就是5-4+1=2，若果2<d，剪掉
-            return
-        if len(path)==k:
-            ans.append(path.copy())
-            return
-        for j in range(i,n+1):  # 从小到大选，避免重复
-            path.append(j)
-            dfs(j+1)
+        ans.append(path.copy())
+        for j in range(i, n):
+            if j>i and nums[j]==nums[j-1]:
+                continue
+            path.append(nums[j])
+            dfs(j + 1)
             path.pop()
-    dfs(1)
+    dfs(0)
     return ans
+
+# 79. 单词搜索
+# 总结：自己写忽略了三个问题：一是什么时候返回True没写明白；二是递归入口是由mn种情况；三是剪枝的判断board[i][j]!=word[k]时就可直接返回False了
+# 时间复杂度:O(mn3^k)，其中 m和n分别为grid 的行数和列数，k是word 的长度。
+# 除了递归入口，其余递归至多有3个分支(因为至少有一个方向是之前走过的)，所以每次递归(回溯)的时间复杂度为O(3^k)，
+# 一共回溯O(mn)次，所以时间复杂度为O(mn3^k)。
+def exist( board, word: str) -> bool:
+    lens=len(word)
+    m,n=len(board), len(board[0])
+    def dfs(i,j,k):
+        if i<0 or i>=m or j<0 or j>=n or board[i][j]!=word[k]:
+            return False
+        if  k==lens-1:
+            return True
+        board[i][j]=1
+        ans=dfs(i+1,j,k+1) or dfs(i-1,j,k+1) or dfs(i,j+1,k+1) or  dfs(i,j-1,k+1)
+        board[i][j]=word[k]
+        return ans
+    ans=False
+    for i in range(m):
+        for j in range(n):
+            ans=ans or dfs(i,j,0)
+    return ans
+
+def exist2(board, word: str) -> bool:
+    m, n = len(board), len(board[0])
+    def dfs(i: int, j: int, k: int) -> bool:
+        if board[i][j] != word[k]:  # 匹配失败
+            return False
+        if k == len(word) - 1:  # 匹配成功！
+            return True
+        board[i][j] = ''  # 标记访问过
+        for x, y in (i, j - 1), (i, j + 1), (i - 1, j), (i + 1, j):  # 相邻格子
+            if 0 <= x < m and 0 <= y < n and dfs(x, y, k + 1):
+                return True  # 搜到了！
+        board[i][j] = word[k]  # 恢复现场
+        return False  # 没搜到
+    return any(dfs(i, j, 0) for i in range(m) for j in range(n))
+# --------------------------(组合回溯问题）--------------------------------------------
+# 77. 组合
+# 时间复杂度：O(Cnk * k )
 def combine2(n: int, k: int): # 从大到小选  时间复杂度：叶子节点有Cnk，路径长度为k，所以时间复杂度是O(k*Cnk)
     ans = []
     path=[]
@@ -130,6 +175,23 @@ def combine2(n: int, k: int): # 从大到小选  时间复杂度：叶子节点�
             dfs(j-1)
             path.pop()
     dfs(n)
+    return ans
+def combine(n: int, k: int):
+    ans = []
+    path=[]
+    def dfs(i):
+        d=k-len(path)  # 还需要选择的个数
+        # 下面是剪枝，剪掉不用的分支，减少递归次数，提高效率
+        if n-i+1<d: # n-i+1表示当前还可选的个数，比如[1,2,3| 4,5], i指向4，当前只能选择4,5 也就是5-4+1=2，若果2<d，剪掉
+            return
+        if len(path)==k:
+            ans.append(path.copy())
+            return
+        for j in range(i,n+1):  # 从小到大选，避免重复
+            path.append(j)
+            dfs(j+1)
+            path.pop()
+    dfs(1)
     return ans
 def combine3(n: int, k: int):  # 使用选和不选的思路解决
     ans = []
@@ -152,8 +214,10 @@ def combine3(n: int, k: int):  # 使用选和不选的思路解决
 
 # 39. 组合总和
 # 给你一个 无重复元素 的整数数组 candidates 和一个目标整数 target ，
-# 找出 candidates 中可以使数字和为目标数 target 的 所有 不同组合 ，并以列表形式返回。你可以按 任意顺序 返回这些组合。
+# 找出 candidates 中可以使数字和为目标数 target 的 所有 不同组合(可以 无限制重复被选取 ) ，并以列表形式返回。你可以按 任意顺序 返回这些组合。
 # [2,2,3]和[2,3,2]属于一种组合
+# 输入：candidates = [2,3,6,7], target = 7
+# 输出：[[2,2,3],[7]]
 def combinationSum( candidates, target: int) :
     ans = []
     path = []
@@ -185,6 +249,34 @@ def combinationSum2( candidates, target: int):
         path.pop()
     dfs(0, 0)
     return ans
+
+# 40. 组合总和 II （含重复元素）
+# 输入: candidates = [10,1,2,7,6,1,5], target = 8,
+# 输出: [[1,1,6],[1,2,5],[1,7],[2,6]]
+# 直接套用的答案为：[[5,1,2],[5,2,1],[1,6,1],[1,7],[6,2],[7,1]]，产生重复
+def combinationSum2_1(candidates, target: int) :
+    candidates.sort(reverse=True)
+    ans = []
+    path=[]
+    n=len(candidates)
+    def dfs(i):
+        ss = sum(path)
+        if ss == target:
+            ans.append(path.copy())
+            return
+        elif ss > target:
+            return
+        elif target - ss < candidates[i]:
+            return
+        for j in range(i,-1,-1):
+            if j<i and candidates[j]==candidates[j+1]:
+                continue
+            path.append(candidates[j])
+            dfs(j-1)
+            path.pop()
+    dfs(n-1)
+    return ans
+# print(combinationSum2_1([2,5,2,1,2],5))
 
 # 216. 组合总和 III
 # 找出所有相加之和为 n 的 k 个数的组合，且满足下列条件：
@@ -265,10 +357,11 @@ def generateParenthesis2(n: int):
 
 
 
-# 排列型回溯问题 （典型：N皇后）
+# --------------------------------------排列型回溯问题 （典型：N皇后）------------------------------------------
 # 和组合回溯的区别：{1,2}和{2,1}是同一种组合，但是排列型回溯问题中，{1,2}和{2,1}是不同的排列。
 # 46. 全排列
 def permute(nums: list[int]):
+    # 时间复杂度O(n*n!)
     ans=[]
     n=len(nums)
     path=[0]*n
@@ -299,6 +392,30 @@ def permute2(nums: list[int]):
     return ans
 # nums=list(map(int,input().strip().split()))
 # print(permute(nums))
+
+# 47. 全排列 II
+# 输入：nums = [1,1,2]
+# 输出： [[1,1,2],[1,2,1],[2,1,1]]
+def permuteUnique(nums):
+    cnt=Counter(nums)
+    ans=[]
+    n=len(nums)
+    s=set(nums)
+    path=[]
+    def dfs(i):
+        if i==n:
+            ans.append(path.copy())
+            return
+        for x in s:
+            if cnt[x]<=0:
+                continue
+            cnt[x]-=1
+            path.append(x)
+            dfs(i+1)
+            path.pop()
+            cnt[x]+=1
+    dfs(0)
+    return ans
 
 # 51. N 皇后
 def solveNQueens( n: int):
