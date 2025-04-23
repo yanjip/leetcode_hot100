@@ -9,6 +9,7 @@ class ListNode:
         self.next = next
 
 # 560. 和为 K 的子数组（前缀和、哈希表）  注：子数组和子串是连续的，子序列不连续
+# 请你统计并返回 该数组中和为 k 的子数组的个数 。
 def subarraySum( nums: list[int], k: int) -> int:
     #  如     1 1 0 1 1，k=2
     # 前缀和:0 1 2 2 3 4, 第二个2减0=2,得到一个子数组; 4减第一个2=2，得到一个子数组; 4-第二个2=2，得到一个子数组;...
@@ -27,6 +28,9 @@ def subarraySum( nums: list[int], k: int) -> int:
 # print(subarraySum(nums, k))
 
 # 56. 合并区间
+# 输入：intervals = [[1,3],[2,6],[8,10],[15,18]]
+# 输出：[[1,6],[8,10],[15,18]]
+# 解释：区间 [1,3] 和 [2,6] 重叠, 将它们合并为 [1,6].
 def merge(intervals) :
     intervals.sort(key=lambda p:p[0])
     ans=[]
@@ -36,7 +40,10 @@ def merge(intervals) :
         else:
             ans.append(p)
     return ans
-
+# 189. 轮转数组 给定一个整数数组 nums，将数组中的元素向右轮转 k 个位置，其中 k 是非负数。
+# 输入: nums = [1,2,3,4,5,6,7], k = 3
+# 输出: [5,6,7,1,2,3,4]
+# 解释:# 向右轮转 1 步: [7,1,2,3,4,5,6]
 # 双指针 数组
 def rotate(nums:list[int], k: int) -> None:
     def reverse(i,j):
