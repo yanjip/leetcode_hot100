@@ -13,6 +13,21 @@ def low_bound(nums, target): # 找到第一个大于等于target的索引
             right=mid-1
     return left  # 第一个大于等于target的索引 （循环不变量，循环到最后，left-1始终是小于target的，right+1始终是大于等于target的）
 
+# 上述为≥tgt，其他形式可以转换成该形式： 例子[5, 7, 7, 8, 8, 10], tg=8 （递增序列）
+#   求>tg 的第一个数:   ≥(tg+1)  等价于先找到第一个≥(8+1)，即index=5的10，即是所求的数。
+#   求<tg的最后一个数:  (≥tg)-1  等价于先找到index=3(从0开始算的)的tg 8，然后再取它右边的数。即找到index=2的数7，即是所求的数。
+#   求≤tg的最后一个数:  (>tg)-1  等价于先找到第一个>tg，即index=5的10，再取它左边的数。即找到index=4的数8，即是所求的数。
+
+# 34. 在排序数组中查找元素的第一个和最后一个位置
+# 输入：nums = [5,7,7,8,8,10], target = 8
+# 输出：[3,4]
+def searchRange(nums, target):
+    start=low_bound(nums,target)
+    if start==len(nums) or nums[start]!=target:
+        return [-1,-1]
+    end=low_bound(nums,target+1)-1
+    return [start,end]
+
 # 给定一个非升序的有序数组和一个target，返回数组中等于target的个数。
 # 腾讯二面
 def count_target(nums, target):
@@ -69,4 +84,20 @@ def searchInsert( nums: list[int], target: int) -> int:
     return low_bound(nums,target-1)+1
 print(searchInsert([1,3,5,6],2))
 
-# 33. 搜索旋转排序数组
+# 153. 寻找旋转排序数组中的最小值（设计一个时间复杂度为 O(log n) 的算法
+# 输入：nums = [3,4,5,1,2]
+# 输出：1
+# 解释：原数组为 [1,2,3,4,5] ，旋转 3 次得到输入数组。
+def findMin(nums: list[int]) -> int:
+    # 只需要比较 x 和 nums[n−1] 的大小关系，就间接地知道了 x 和数组最小值的位置关系
+    left = 0
+    n = len(nums)
+    right = n - 2
+    while left <= right:
+        mid = (left + right) // 2
+        if nums[mid] < nums[-1]:
+            right = mid - 1
+        else:
+            left = mid + 1
+    return nums[left]
+

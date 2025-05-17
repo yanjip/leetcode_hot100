@@ -124,11 +124,12 @@ def subarraySum_once(nums: list[int], K: int) -> int:
 def lengthOfLongestSubstring( s):
     left=0
     ans=0
-    count=Counter()
+    # 记录当前窗口中每个字符的出现次数。
+    count=Counter() # 也可以写成 defaultdict(int)
     for right,x in enumerate(s):
         count[x]+=1
-        while count[x]>1:
-            count[s[left]]-=1
+        while count[x]>1: # 出现重复了，left对应的cnt可以-1，然后移动left
+            count[s[left]]-=1 # 有可能s[left]等于x，此时count[x]==2，所以这行不能写成=0
             left+=1
         ans=max(ans,right-left+1)
     return ans

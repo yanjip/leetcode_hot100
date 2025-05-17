@@ -103,9 +103,9 @@ def lowestCommonAncestor_search_Tree(root, p, q):
     # 注意，相比于上一题，该解法是先判断后递归；
     # 不需要判断当前节点值是否为空。因为题目规定p q都在树中，因此，按照以下递归方式，一定能找到p和q，或者说不可能递归到空节点
     x = root.val
-    if x>p.val and x>q.val:
+    if x>p.val and x>q.val: # p和q肯定都在左子树
         return lowestCommonAncestor(root.left,p,q)
-    if x<p.val and x<q.val:
+    if x<p.val and x<q.val:  # p和q肯定都在右子树
         return lowestCommonAncestor(root.right,p,q)
     return root
 
@@ -202,7 +202,7 @@ def kthSmallest(root, k: int) -> int:
         if node is None:
             return -1
         left = dfs(node.left)  # 直接返回答案的写法
-        if left != -1:
+        if left != -1: # 不等于-1，说明左子树已经找到答案，直接返回答案.等于-1继续处理
             return left
         nonlocal k
         k -= 1             #!!!!!!!!!!!!!!!!!dfs就是从上往下递归，从下往上返回答案
@@ -211,7 +211,23 @@ def kthSmallest(root, k: int) -> int:
         return dfs(node.right)  # 右子树会返回答案或者 -1
     return dfs(root)
 
-def kthSmallest2(root, k):
+def kthSmallest2(root: Optional[TreeNode], k: int) -> int:
+    def dfs(node, k):
+        if not node:
+            return None, k  # 返回 (结果, 剩余的 k)
+        # 遍历左子树
+        left_result, k = dfs(node.left, k)
+        if left_result is not None:
+            return left_result, k  # 左子树找到答案，直接返回
+        # 处理当前节点
+        k -= 1
+        if k == 0:
+            return node.val, k  # 当前节点是第 k 小，返回其值
+        # 遍历右子树
+        return dfs(node.right, k)  # 传递更新后的 k
+    result, _ = dfs(root, k)
+    return result
+def kthSmallest3(root, k):
     ans = []
     global ans
     def dfs(node):
@@ -273,8 +289,11 @@ def buildTree(preorder: list[int], inorder: list[int]):
     head.left=buildTree(preorder[1:index+1], inorder[:index])
     head.right=buildTree(preorder[index+1:], inorder[index+1:])  # 不管是前序还是中序，index+1之后都是右子树
     return head
+from collections import defaultdict
 
 # 437. 路径总和 III
+# 给定一个二叉树的根节点 root ，和一个整数 targetSum ，求该二叉树里节点值之和等于 targetSum 的 路径 的数目。
+# 路径 不需要从根节点开始，也不需要在叶子节点结束，但是路径方向必须是向下的（只能从父节点到子节点）。
 def pathSum(root, targetSum: int) -> int:
     def dfs(node, cur_sum):
         if node is None:
@@ -295,13 +314,11 @@ def pathSum(root, targetSum: int) -> int:
         return total
     return double(root)
 
-from collections import defaultdict
 # 前缀和解法
 def pathSum2(root, targetSum: int) -> int:
     ans = 0
     cnt = defaultdict(int)
     cnt[0] = 1  # 类似560的解法
-
     def dfs(node, s):
         if node is None:
             return
@@ -312,11 +329,12 @@ def pathSum2(root, targetSum: int) -> int:
         dfs(node.left, s)
         dfs(node.right, s)
         cnt[s] -= 1
-
     dfs(root, 0)
     return ans
 
 # 543. 二叉树的直径  时空复杂度均为O(n)
+# 二叉树的 直径 是指树中任意两个节点之间最长路径的 长度 。这条路径可能经过也可能不经过根节点 root 。
+# 两节点之间路径的 长度 由它们之间边数表示。
 def diameterOfBinaryTree(root: TreeNode) -> int:
     ans=0
     def dfs(node):
@@ -329,3 +347,7 @@ def diameterOfBinaryTree(root: TreeNode) -> int:
         return max(left_len,right_len)  # 要思考返回的到底是什么？dfs(node)的目的是获取以node为子节点的最大深度(不拐弯)，所以返回的是left_len和right_len中的较大值
     dfs(root)
     return ans
+class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next

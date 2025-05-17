@@ -1,9 +1,11 @@
 # time: 2025/2/18 9:35
 # author: YanJP
 # 198. 打家劫舍
-from collections import Counter
+from collections import Counter, defaultdict
 from functools import cache
 import time
+from math import isqrt
+
 
 def rob(nums: list[int]):  # 超时，时间复杂度是指数级别
     def dfs(i):
@@ -191,7 +193,23 @@ coins=[3,7,405,436]
 # 边界条件的处理：
     # 最大价值和：返回0（无物品可选）。--状态转移使用max
     # 最小价值和：如果c == 0，返回0；否则返回float("inf")（无解）。--状态转移使用min
-    # 方案数：如果c == 0，返回1；否则返回0（无方案）。--状态转移使用加法
+    # 方案数：如果c == 0，返回1；否则返回0（无方案）。--状态转移使用 加法
+
+# 279. 完全平方数 （完全背包问题）
+# 给你一个整数 n ，返回 和为 n 的完全平方数的最少数量 。
+@cache  # 写在外面，多个测试数据之间可以共享，减少计算量
+def dfs(i, j):  # 定义 dfs(i,j) 表示从前 i 个完全平方数中选一些数（可以重复选），满足元素和恰好等于 j，最少要选的数字个数。
+    if i == 0:
+        return float('inf') if j else 0
+    if j < i * i:
+        return dfs(i - 1, j)  # 只能不选
+    return min(dfs(i - 1, j), dfs(i, j - i * i) + 1)
+
+
+class Solution:
+    def numSquares(self, n: int) -> int:
+        return dfs(isqrt(n), n)  # 递归入口为 dfs(⌊n⌋,n)
+
 
 # 416. 分割等和子集
 # 输入：nums = [1,5,11,5]
@@ -651,6 +669,7 @@ def diameterOfBinaryTree(root: TreeNode) -> int:
     return ans
 
 # 124. 二叉树中的最大路径和
+# 同一个节点在一条路径序列中 至多出现一次 。该路径 至少包含一个 节点，且不一定经过根节点。
 def maxPathSum(root: [TreeNode]):
     ans=-float("inf")
     def dfs(node):
@@ -664,7 +683,46 @@ def maxPathSum(root: [TreeNode]):
         return max(max(left_len,right_len,0)+node.val,0)   # 如果以当前节点值作为子树的路径和为负数，则告诉父节点不选该子树
     dfs(root) # 枚举所有节点作为 拐弯的节点
     return ans
+# 437. 路径总和 III
+# 给定一个二叉树的根节点 root ，和一个整数 targetSum ，求该二叉树里节点值之和等于 targetSum 的 路径 的数目。
+# 路径 不需要从根节点开始，也不需要在叶子节点结束，但是路径方向必须是向下的（只能从父节点到子节点）。
+def pathSum(root, targetSum: int) -> int:
+    def dfs(node, cur_sum):
+        if node is None:
+            return 0
+        cnt=0
+        if cur_sum+node.val==targetSum:
+            cnt+=1
+            # cur_sum=0
+        cnt+=dfs(node.left, cur_sum+node.val)
+        cnt+=dfs(node.right, cur_sum+node.val)
+        return cnt
+    def double(node):
+        if node is None:
+            return 0
+        total= dfs(node,0)
+        total+=double(node.left)
+        total+=double(node.right)
+        return total
+    return double(root)
 
+# 前缀和解法
+def pathSum2(root, targetSum: int) -> int:
+    ans = 0
+    cnt = defaultdict(int)
+    cnt[0] = 1  # 类似560的解法
+    def dfs(node, s):
+        if node is None:
+            return
+        nonlocal ans
+        s += node.val
+        ans += cnt[s - targetSum]
+        cnt[s] += 1
+        dfs(node.left, s)
+        dfs(node.right, s)
+        cnt[s] -= 1
+    dfs(root, 0)
+    return ans
 # 687. 最长同值路径
 # 返回 最长的路径的长度 ，这个路径中的 每个节点具有相同值 。(可以拐弯）
 def longestUnivaluePath(root: [TreeNode]) -> int:

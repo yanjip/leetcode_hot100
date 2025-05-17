@@ -231,3 +231,173 @@ def longestPalindrome_dfs( s: str) -> str:
                 start=j
                 lenth=i-j+1
     return s[start:start+lenth]
+# 总结
+# 和为 K 的子数组：前缀和求解
+
+# 最长公共子序列LCS：dfs(m-1,n-1) 选或不选
+# dp[i][j] = dp[i-1][j-1]+1 if s1[i] == s2[j] else max(dp[i-1][j], dp[i][j-1])
+
+
+# 最长递增子序列LCS：max(dfs(i)) 枚举选哪个的思路 (以i结尾
+# for j in range(i): if nums[j] < nums[i]: res=max(res, dfs(j)) return res+1
+
+# 最长连续递增子序列LICS：max(dfs(i)) (以i结尾
+# if i==0 return 1 if nums[i]>nums[i-1] return dfs(i-1)+1 else return 1
+
+# 最长子数组和 前缀和（维护一个最小的前缀和）+dfs max(dfs(i))
+# dfs[i]=max(dp[i-1]+nums[i], nums[i]) if i<0 return 0
+
+# 最长回文子序列：dfs(0,n-1) 表示s[i..j]的最长回文子序列
+# if i>j: return 0 if i==j: return 1 if s[i]==s[j]: return dfs(i+1,j-1)+2 else: return max(dfs(i+1,j), dfs(i,j-1))
+
+# 最长回文子串：dfs(j,i) 表示子串s[j:i]是否为回文串 j \in [0,i] 且for循环遍历
+# 入参：if dfs(j,i) and i-j+1>max_len: start=j max_len=i-j+1 return s[start:start+max_len]
+# dfs：if i == j: return True elif i - 1 == j: return s[i] == s[j] else: return dfs(j+1, i-1) and s[i] == s[j]
+
+# 01背包：dfs(n-1, cap) 选或不选
+# if weights[i]>c: return dfs(i-1, cap) else: return max(dfs(i-1, cap), dfs(i-1, cap-weights[i])+values[i])
+
+# 目标和：返回的是方案数 target+=sum(nums) target//=2
+# 入参：dfs(n-1,target)
+# if i<0: return 1 if target==0 else 0 return dfs(i-1,target)+dfs(i-1,target-nums[i])
+
+# 零钱兑换 返回凑成amount的最小硬币数量 完全背包
+# 答案：ans=dfs(n-1, amount) return ans if ans<=inf else -1
+# if i<0: return 0 if target==0 else inf. if target<coins[i]: return dfs(i-1, target). return min(dfs(i-1, target), dfs(i, target-coins[i])+1)
+
+# 分割等和子集 返回是否可以分割 选或不选的思路
+# 答案： dfs(n-1, s//2)
+# if i<0: return s==0. if nums[i]>s return dfs(i-1,s). return dfs(i-1, s) or dfs(i-1, s-nums[i])
+# ——————————————————————————回溯问题————————————————————————————————
+# 子集回溯：枚举选哪个 dfs(0)
+# 每次都要执行append：ans.append(path[:]). for j in range(i,n): path.append(nums[j]) dfs(j+1) pop
+
+# 分割回文串 枚举选哪个 dfs(0)
+# if i==n: ans.append(path[:]) for j in range(i,n): if s[i:j+1]==s[i:j+1][::-1]: path.append(s[i:j+1]) dfs(j+1) path.pop()
+
+# 单词搜索 两层for循环入参 ans=ans or dfs(i,j,k=0) k==len(word)-1时说明匹配 i in range(m) j in range(n)
+# 超出边界或不匹配： return False. if k==lens-1: return True. board[i][j]=1(标记访问过） ans=dfs(i+1,j,k+1) or dfs(i-1,j,k+1) or dfs(i,j+1,k+1) or dfs(i,j-1,k+1) board[i][j]=word[k]
+# borad[i][j] = word[k] returnans
+
+# 组合：枚举选哪个 后序选择比较方便 dfs(n)
+# d=k-len(path) if i<d: return if len(path==k): ans.append(path[:]) return. for j in range(i,0,-1): path.append(j) dfs(j-1) path.pop()
+
+# 组合总和 给你一个 无重复元素 的整数数组 candidates 和一个目标整数 target ，
+# 找出 candidates 中可以使数字和为目标数 target 的 所有 不同组合。可重复选
+# 入参：dfs(start=0,s=0)
+# if s==target: ans.append(path[:]) return. if s>target: return. for j in range(start,n): path.append(candidates[j]) dfs(j,s+candidates[j]) path.pop()
+
+# 括号生成. 数字 n 代表生成括号的对数 入参：dfs(0,cnt_left).
+# if i==2*n: ans.append(path[:]) return. if cnt_left<n: path[i]=( dfs(i+1,cnt_left+1). if i-cnt_left<cnt_left: path[i]=) dfs(i+1,cnt_left)
+
+# 全排列 dfs(0, set(nums))
+# if i==n:ans.append(path[:]) return. for j in sets: path[i]=j dfs(i+1, sets-{j})
+
+# N皇后 记录col=【0】*n 数组，第i个元素的值 == 第i行的皇后所在的列
+# 入参：dfs(row=0, set(range(n))
+# if row==n: 添加答案 return. for c in s: if valid(row,c)： col[row]=c dfs(row+1, s-{c})
+# 其中valid(row,c): for R in range(row): C=col[R] if row+c==R+C or row-c==R-C: return False. 最后return True
+
+
+# ——————————————————————————二叉树———————————————————————————————————
+# 二叉树的最大深度
+# left=maxDepth(root.left) right=maxDepth(root.right) return max(left,right)+1
+
+# 二叉树的右视图   入参：dfs(root, depth=0) ans=[]
+# if len(ans)==depth: ans.append(node.val). dfs(node.right, depth+1) dfs(node.left, depth+1)
+
+# 验证二叉搜索树  前序遍历做法（先访问根节点值)
+# if root is None: x=root.val. return left<x<right and isValid(root.left, left, x) and isValid(root.right, x, right)
+
+# 二叉树的最近公共祖先 调用自身
+# if root is None or root==p or root==q: return root
+# left=lowestCommonAncestor(root.left, p, q) right=lowestCommonAncestor(root.right, p, q)
+# if left and right: return root
+# return left if left else right 只有一侧非空，则返回非空的那侧
+
+# 二叉树的中序遍历 入参：dfs(root) ans=[]
+# dfs(node.left) ans.append(node.val) dfs(node.right)
+
+# 二叉树的层序遍历  BFS 使用队列求解
+# ans=[] q=deque([root])
+# while q: vals=[] for _ in range(len(q)): node=q.popleft() vals.append(node.val)
+# if node.left: q.append(node.left) if node.right: q.append(node.right). for循环后：ans.append(vals)
+
+# 二叉搜索树中第 K 小的元素 入参：dfs(root)
+# if node is None: return -1. left=dfs(node.left).
+# if left!=k-1: return left. k-=1 if k==0: return node.val. return dfs(node.right)
+# 解法2：直接层序遍历，然后取第k个元素
+
+# 二叉树展开为链表 头插法 调用自身
+# def flatten(root: Optional[TreeNode]) -> None:
+# if root is None: return. self.flatten(root.right). self.flatten(root.left) root.left=None root.right=self.head. self.head=root
+
+# 二叉树的直径 入口：dfs(root)
+# if node is None: return -1. left=dfs(node.left)+1 right=dfs(node.right)+1 ans=max(ans, left+right) return max(left,right)
+
+# ————————————————————————————链表——————————————————————————————————
+# 反转链表：pre=None cur=head
+# while cur: nxt=cur.next cur.next=pre pre=cur cur=nxt return pre
+
+# 删除链表的倒数第 N 个结点 同向双指针
+# dummgy=ListNode(next=head) right=dummy for _ in range(n): right=right.next
+# left=dummy while right.next: left=left.next right=right.next.
+# left.next=left.next.next return dummy.next
+
+# 两两交换链表中的节点
+# 维护node1-node3四个节点， node0看成pre，node1看成cur 然后node0.next=node2 node2
+
+# 合并两个有序链表
+# cur=dummy=ListNode()
+# while list1 and list2: if list1.val<list2.val: cur.next=list1 list1=list1.next
+# else: cur.next=list2 list2=list2.next
+# cur=cur.next 退出while循环：cur.next=list1 if list1 else list2 return dummy.next
+
+# 560. 和为 K 的子数组（前缀和、哈希表）
+# def subarraySum_once(nums: list[int], K: int) -> int:
+#     ans = s = 0
+#     cnt = defaultdict(int)
+#     cnt[0] = 1  # 对应上面sj=1时，cnt[sj]+=1
+#     for x in nums:
+#         s += x             #1. 计算前缀和
+#         ans += cnt[s - K]  #2. 更新答案
+#         cnt[s] += 1        #3. 更新哈希表中对应前缀和的个数
+#     return ans
+
+# 无重复字符的最长子串  滑动窗口
+# def lengthOfLongestSubstring( s):
+#     left=0
+#     ans=0
+#     # 记录当前窗口中每个字符的出现次数。
+#     count=Counter() # 也可以写成 defaultdict(int)
+#     for right,x in enumerate(s):
+#         count[x]+=1
+#         while count[x]>1: # 出现重复了，left对应的cnt可以-1，然后移动left
+#             count[s[left]]-=1 # 有可能s[left]等于x，此时count[x]==2，所以这行不能写成=0
+#             left+=1
+#         ans=max(ans,right-left+1)
+#     return ans
+
+# 滑动窗口最大值 （单调队列）
+# def maxSlidingWindow(nums: list[int], k: int) -> list[int]:
+#     ans=[]
+#     q=deque() # 存在的是下标
+#     for i, x in enumerate(nums):
+#         while q and nums[q[-1]]<=x: # x太大了 就存x pop队列的数
+#             q.pop()
+#         q.append(i)
+#         if i-q[0]+1>k:
+#             q.popleft()
+#         if i>=k-1: # 从满足窗口大小后就开始存答案
+#             ans.append(nums[q[0]])
+#     return ans
+
+# —————————————————————————————二分查找——————————————————————————
+# def low_bound(nums, target): # 找到第一个大于等于≥target的索引
+#     left,right=0,len(nums)-1
+#     while left<=right:
+#         mid=(left+right)//2
+#         if nums[mid]<target: left=mid+1
+#         else: right=mid-1
+#     return left
+# 变形：如果求找到第一个>target的索引，则可看成求第一个≥(target+1)的索引

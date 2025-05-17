@@ -1,5 +1,6 @@
 # time: 2025/1/14 10:06
 # author: YanJP
+from typing import Optional
 
 class ListNode():
     def __init__(self, val=0, next=None):
@@ -19,11 +20,14 @@ def reverseList( head):
 
 # 92. 反转链表 II
 # 给你单链表的头指针 head 和两个整数 left 和 right ，其中 left <= right 。请你反转从位置 left 到位置 right 的链表节点，返回 反转后的链表 。
+# 输入：head = [1,2,3,4,5], left = 2, right = 4
+# 输出：       [1,4,3,2,5]
 def reverseBetween(head, left, right):
     dummy = ListNode(next=head)
     p0 = dummy
     for _ in range(left - 1):
         p0 = p0.next
+    # 现在p0指向的是left左边的节点，即为1
     pre = None
     cur = p0.next
     for _ in range(right - left + 1):
@@ -31,11 +35,30 @@ def reverseBetween(head, left, right):
         cur.next = pre
         pre = cur
         cur = nxt
-    p0.next.next = cur  # 注意，p0的next指向的是反转后链表的最后一个节点，此时这个节点需要指向right后面的节点，即为cur
-    p0.next = pre # 最后，再将前半段与翻转后的头结点，即pre 连接起来
+    p0.next.next = cur  # 注意，p0的next指向的是反转后链表的最后一个节点，此时这个节点需要指向right后面的节点，即为cur. 也就是说2要指向5
+    p0.next = pre # 最后，pre指向的是right对应的节点，再将前半段与翻转后的头结点，即pre 连接起来. 1要指向4
     return dummy.next
+
+# 24. 两两交换链表中的节点
+def swapPairs( head ):
+    node0=dummy=ListNode(next=head)
+    node1=head
+    while node1 and node1.next:
+        node2=node1.next
+        node3=node2.next
+
+        node0.next=node2
+        node2.next=node1
+        node1.next=node3
+
+        node0=node1
+        node1=node3
+    return dummy.next
+
 # 25. K 个一组翻转链表  每 k 个节点一组进行翻转，请你返回修改后的链表。
 # LGH 美团一面手撕
+# 输入：head = [1,2,3,4,5], k = 2
+# 输出：[2,1,4,3,5]   （第一轮：中间步骤[2,1,3,4,5])
 def reverseKGroup(head: ListNode, k: int) -> ListNode:
     n=0
     cur=head
@@ -53,16 +76,14 @@ def reverseKGroup(head: ListNode, k: int) -> ListNode:
             cur.next=pre
             pre=cur
             cur=nxt
-        nxt=p0.next
-        p0.next.next=cur
-        p0.next=pre
-        p0=nxt  # 相当于就是p0需要指向下次需要反正的K个节点的 前一个节点
+        pp=p0.next  # 这里的pp是用来更新p0的，例如p0最开始为None，然后pp更新成1，而此时这个1就是下一次翻转的p0
+        p0.next.next=cur # 在第一轮中，1要指向3； 在第二轮中，3要指向5
+        p0.next=pre # 在第一轮中，dummy指向2； 在第二轮中，1要指向4
+        p0=pp  # 相当于就是p0需要指向下次需要反正的K个节点的 前一个节点
     return dummy.next
 
-
-
-
 # 141. 环形链表
+# 时间复杂度是 O(n)
 def hasCycle(head: ListNode) -> bool:
     fast=head
     slow=head
@@ -79,7 +100,7 @@ def hasCycle(head: ListNode) -> bool:
 # 快指针走的长度为a+b+k(b+c)，环长的整数倍（注意，在环内走的时候，计算相对速度，即慢指针在相遇点不动，快指针每次走一步）
 # 慢指针走的长度为a+b，
 # 因为快指针走的长度是慢指针的两倍，所以2a+2b = a+b+k(b+c)，==> a-c=(k-1)(b+c)
-# 快指针和慢指针相遇后，慢指针再走c步，头结点走c步，然后：头结点走完c步之后，离环入口的距离是环长的整数倍，则两者一起走，一定会在入口相遇
+# 快指针和慢指针相遇后，慢指针再走c步，头结点走c步。头结点走完c步之后，离环入口的距离是环长的整数倍，则两者一起走，一定会在入口相遇
 
 # 还有一个点需要注意，慢指针进入环后，此时离相遇时，其移动的距离一定不会超过环的长度，（原因通过相对速度分析得出）
 def detectCycle(head: ListNode) -> ListNode:
@@ -131,6 +152,8 @@ def deleteDuplicates( head):
 def deleteDuplicatesII(head):
     dummy = ListNode(next=head)
     cur = dummy
+    # 如果检测到重复，需要不断 cur.next = cur.next.next 来删除所有重复节点。
+    # 所以必须确保至少有两个节点存在才能开始判断是否重复
     while cur.next and cur.next.next:
         val = cur.next.val
         if val == cur.next.next.val:
@@ -139,22 +162,6 @@ def deleteDuplicatesII(head):
         else:
             cur = cur.next
     return dummy.next  # 注意注意！！！
-
-# 24. 两两交换链表中的节点
-def swapPairs( head ):
-    node0=dummy=ListNode(next=head)
-    node1=head
-    while node1 and node1.next:
-        node2=node1.next
-        node3=node2.next
-
-        node0.next=node2
-        node2.next=node1
-        node1.next=node3
-
-        node0=node1
-        node1=node3
-    return dummy.next
 
 
 # 21. 合并两个有序链表
@@ -180,3 +187,30 @@ def middleNode(head):
         fast=fast.next.next
         slow=slow.next
     return slow
+
+# 2. 两数相加
+# 输入：l1 = [2,4,3], l2 = [5,6,4]
+# 输出：[7,0,8]
+# 解释：342 + 465 = 807. （反的顺序刚好从个位开始相加）
+# 修改原链表写法
+def addTwoNumbers( l1: Optional[ListNode], l2: Optional[ListNode], carry=0) -> Optional[ListNode]:
+    if l1 is None and l2 is None:
+        return ListNode(carry) if carry else None
+    if l1 is None: # 如果 l1 是空的，那么此时 l2 一定不是空节点
+        l1, l2= l2, l1
+    s=carry+l1.val + (l2.val if l2 else 0)
+    l1.val = s%10
+    l1.next=addTwoNumbers(l1.next, l2.next if l2 else None, s//10)
+    return l1
+# 创建新链表写法
+def addTwoNumbers2( l1: Optional[ListNode], l2: Optional[ListNode], carry=0) -> Optional[ListNode]:
+    if l1 is None and l2 is None and carry == 0:
+        return None
+    s = carry
+    if l1:
+        s += l1.val
+        l1 = l1.next
+    if l2:
+        s += l2.val
+        l2 = l2.next
+    return ListNode(s % 10, next=addTwoNumbers2(l1, l2, s // 10))

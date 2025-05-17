@@ -27,19 +27,6 @@ def subarraySum( nums: list[int], k: int) -> int:
 # k=int(input())
 # print(subarraySum(nums, k))
 
-# 56. 合并区间
-# 输入：intervals = [[1,3],[2,6],[8,10],[15,18]]
-# 输出：[[1,6],[8,10],[15,18]]
-# 解释：区间 [1,3] 和 [2,6] 重叠, 将它们合并为 [1,6].
-def merge(intervals) :
-    intervals.sort(key=lambda p:p[0])
-    ans=[]
-    for p in intervals:
-        if ans and p[0]<=ans[-1][1]:
-            ans[-1][1]=max(ans[-1][1], p[1])
-        else:
-            ans.append(p)
-    return ans
 # 189. 轮转数组 给定一个整数数组 nums，将数组中的元素向右轮转 k 个位置，其中 k 是非负数。
 # 输入: nums = [1,2,3,4,5,6,7], k = 3
 # 输出: [5,6,7,1,2,3,4]
@@ -452,3 +439,85 @@ class Solution:
             nums[left], nums[right] = nums[right], nums[left]
             left += 1
             right -= 1
+# 347. 前 K 个高频元素
+# 给你一个整数数组 nums 和一个整数 k ，请你返回其中出现频率前 k 高的元素。
+# 输入: nums = [1,1,1,2,2,3], k = 2
+# 输出: [1,2]
+def topKFrequent( nums: list[int], k: int) -> list[int]:
+    cnt=Counter(nums) # 第一步：统计每个元素的出现次数
+    max_cnt=max(cnt.values())
+    # 第二步：把出现次数相同的元素，放到同一个桶中
+    buckets=[[] for _ in range(max_cnt+1)]
+    for x, c in cnt.items():
+        buckets[c].append(x) # 关键是这里，例如出现5次的数字有[3,4]
+    # 第三步：倒序遍历 buckets，把出现次数前 k 大的元素加入答案
+    ans=[]
+    for bucket in reversed(buckets):
+        ans+=bucket
+        if len(ans)==k:
+            return ans
+# 56. 合并区间
+# 输入：intervals = [[1,3],[2,6],[8,10],[15,18]]
+# 输出：[[1,6],[8,10],[15,18]]
+# 解释：区间 [1,3] 和 [2,6] 重叠, 将它们合并为 [1,6].
+def merge(intervals) :
+    intervals.sort(key=lambda p:p[0])
+    ans=[]
+    for p in intervals:
+        if ans and p[0]<=ans[-1][1]:
+            ans[-1][1]=max(ans[-1][1], p[1])
+        else:
+            ans.append(p)
+    return ans
+
+
+
+#763. 划分字母区间
+# 输入：s = "ababcbacadefegdehijhklij"
+# 输出：[9,7,8]
+# 解释：划分结果为 "ababcbaca"、"defegde"、"hijhklij" 。
+# 例如字母 d 的区间为 [9,14]，片段要包含 d，必须包含区间 [9,14]，但区间 [9,14] 中还有其它字母 e,f,g，所以该片段也
+# 必须包含这些字母对应的区间 e[10,15],f[11,11],g[13,13]，合并后得到区间 [9,15]。
+def partitionLabels( s: str):
+    last={c:i for i, c in enumerate(s)} # 每个字母最后出现的下标
+    ans=[]
+    start=end=0
+    for i, c in enumerate(s):
+        end=max(end, last[c]) # 更新当前区间右端点的最大值
+        if end==i: # 当前区间合并完毕
+            ans.append(end-start+1)
+            start=i+1
+    return ans # 下一个区间的左端点
+
+# 55. 跳跃游戏
+# 给你一个非负整数数组 nums ，你最初位于数组的 第一个下标 。数组中的每个元素代表你在该位置可以跳跃的最大长度。
+# 判断你是否能够到达最后一个下标，如果可以，返回 true ；否则，返回 false 。
+# 输入：nums = [3,2,1,0,4]
+# 输出：false
+def canJump( nums: list[int]) -> bool:
+    mx=0
+    for i, jump in enumerate(nums):
+        if i > mx: # 无法到达 i
+            return False
+        mx = max(mx, i+jump)
+    return True
+
+# 45. 跳跃游戏 II
+# 返回到达 nums[n - 1] 的最小跳跃次数。测试用例保证可以到达 nums[n - 1]。
+# 输入: nums = [2,3,1,1,4]
+# 输出: 2 步到达
+# 问：为什么代码只需要遍历到 n−2？
+# 当 i=n−2 时，如果 i<curRight，说明可以到达 n−1；
+#            如果 i=curRight，我们会造桥（因为一定有一个桥可以到达 n−1，说明nums[n-2]不可能为0，肯定≥1，ans+=1就得到答案），这样也可以到达 n−1。
+# 所以无论是何种情况，都只需要遍历到 n−2。或者说，n−1 已经是终点了，你总不能在终点还打算造桥吧？
+def jump(nums: list[int]) -> int:
+    ans = 0
+    cur_right = 0  # 已建造的桥的右端点
+    next_right = 0  # 下一座桥的右端点的最大值
+    for i in range(len(nums) - 1):
+        # 遍历的过程中，记录下一座桥的最远点
+        next_right = max(next_right, i + nums[i])
+        if i == cur_right:  # 无路可走，必须建桥
+            cur_right = next_right
+            ans += 1
+    return ans

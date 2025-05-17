@@ -9,7 +9,7 @@ from collections import deque
 # 输入: temperatures = [30,40,50,60]
 # 输出: [1,1,1,0]
 def dailyTemperatures(temperatures: list[int]) -> list[int]:
-    st=[] # 单调栈  存放下标
+    st=[] # 单调栈  存放下标 从下往上为递减的栈
     ans=[0]*len(temperatures)
     for i in range(len(temperatures)-1,-1,-1):
         t=temperatures[i]
@@ -31,6 +31,34 @@ def dailyTemperatures_forword(temperatures: list[int]) -> list[int]:
 # temperatures=list(map(int,input().strip().split(',')))
 # print(dailyTemperatures_forword(temperatures))
 
+# 20. 有效的括号
+# 给定一个只包括 '('，')'，'{'，'}'，'['，']' 的字符串 s ，判断字符串是否有效。
+def isValid( s: str) -> bool:
+    if len(s)%2: return False
+    st=[]
+    mp={')':'(', '}':'{', ']':'['}
+    for ss in s:
+        if ss not in mp:
+            st.append(ss)
+        elif not st or st.pop() != mp[ss]: # 以防的是括号不匹配的情况(]
+            return False
+    return not st # 以防的是全是左括号的情况({
+
+# 入栈对应的右括号，且不使用map的写法
+def isValid2( s: str) -> bool:
+    if len(s) % 2:  # s 长度必须是偶数
+        return False
+    st = []
+    for c in s:
+        if c == '(':
+            st.append(')')  # 入栈对应的右括号
+        elif c == '[':
+            st.append(']')
+        elif c == '{':
+            st.append('}')
+        elif not st or st.pop() != c:  # c 是右括号
+            return False  # 没有左括号，或者左括号类型不对
+    return not st  # 所有左括号必须匹配完毕
 
 
 # 42. 接雨水
@@ -46,20 +74,20 @@ def trap(height: list[int]) -> int:
             ans+= (min(left_h,h)-botton_height)*(i-st[-1]-1)
         st.append(i)
     return ans
-height = [0,1,0,2,1,0,1,3,2,1,2,1]
-print(trap(height))
+# height = [0,1,0,2,1,0,1,3,2,1,2,1]
+# print(trap(height))
 
 # 239. 滑动窗口最大值 （单调队列）
 def maxSlidingWindow(nums: list[int], k: int) -> list[int]:
     ans=[]
     q=deque() # 存在的是下标
     for i, x in enumerate(nums):
-        while q and nums[q[-1]]<=x:
+        while q and nums[q[-1]]<=x: # x太大了 就存x pop队列的数
             q.pop()
         q.append(i)
         if i-q[0]+1>k:
             q.popleft()
-        if i>=k-1:
+        if i>=k-1: # 从满足窗口大小后就开始存答案
             ans.append(nums[q[0]])
     return ans
 
@@ -82,3 +110,50 @@ def decodeString( s):
         else:
             res+=c
     return res
+
+# 找到某个特定下标 i 的左边 小于 heights[i] 的元素的 下标
+def find_left_smaller_index(heights, i):
+    stack = []  # 单调递增栈，保存的是下标, 例如对应的值为[2,4,5,7]
+
+    for idx in range(i):
+        while stack and heights[stack[-1]] >= heights[i]:
+            stack.pop()
+    if stack:
+        return stack[-1]  # 返回左边第一个比 heights[i] 小的下标
+    else:
+        return -1  # 没有符合条件的元素
+
+# 给定一个数组heights，找到小于height[i]的左边最近比它小的高度，右边比它小的最近高度的 下标。
+def find_left_small(heights: list[int]):
+    n = len(heights)
+    left = [-1] * n  # 维护的是一个从下往上递增的子序列，即找到比h[i]小的下标
+    st = []
+    for i, h in enumerate(heights):
+        while st and heights[st[-1]] >= h:
+            st.pop()
+        if st:
+            left[i] = st[-1]
+        st.append(i)  # 存下标
+    right = [n] * n
+    st.clear()
+    for i in range(n - 1, -1, -1):
+        h = heights[i]
+        while st and h <= heights[st[-1]]:
+            st.pop()
+        if st:
+            right[i] = st[-1]
+        st.append(i)
+    print(left, right)
+    return left, right
+# find_left_small([2,1,5,6,2,3])
+
+# 84. 柱状图中最大的矩形
+# 给定 n 个非负整数，用来表示柱状图中各个柱子的高度。每个柱子彼此相邻，且宽度为 1 。
+# 求在该柱状图中，能够勾勒出来的矩形的最大面积。
+# 解题思路就是找到矩形的左右下标，然后计算面积求最大
+def largestRectangleArea(heights) -> int:
+    left, right=find_left_small(heights)
+    ans=0
+    for h, l, r in zip(heights, left, right):
+        ans = max(ans, h * (r - l - 1))
+    return ans
