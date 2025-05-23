@@ -243,6 +243,25 @@ def combinationSum( candidates, target: int) :
             path.pop()
     dfs(0, 0)
     return ans
+# 按照下一题的写法求解（效率还没上一题优化好）
+def combinationSum3( candidates, target: int):
+    candidates.sort(reverse=True)
+    ans = []
+    path = []
+    n = len(candidates)
+    def dfs(start):
+        s = sum(path)
+        if s == target:
+            ans.append(path[:])
+            return
+        if s > target: return
+        if target - s < candidates[start]: return
+        for j in range(start, -1, -1):
+            path.append(candidates[j])
+            dfs(j)
+            path.pop()
+    dfs(n - 1)
+    return ans
 def combinationSum2( candidates, target: int):
     ans = []
     path = []
@@ -286,6 +305,26 @@ def combinationSum2_1(candidates, target: int) :
             path.pop()
     dfs(n-1)
     return ans
+# 另一种写法
+def combinationSum2_2(candidates, target: int):
+    candidates.sort()
+    ans = []
+    path = []
+    n = len(candidates)
+    def dfs(i, ss):
+        if ss == target:
+            ans.append(path.copy())
+            return
+        if ss > target or i >= n:
+            return
+        for j in range(i, n):  # 修正1：循环到n，而不是写成n-1
+            if j > i and candidates[j] == candidates[j - 1]: # 修正2：比较j和j-1，而不是写成j和j+1
+                continue
+            path.append(candidates[j])
+            dfs(j + 1, ss + candidates[j])
+            path.pop()
+    dfs(0, 0)
+    return ans
 # print(combinationSum2_1([2,5,2,1,2],5))
 
 # 216. 组合总和 III
@@ -293,7 +332,7 @@ def combinationSum2_1(candidates, target: int) :
 # 只使用数字1到9；每个数字 最多使用一次
 # 输入: k = 3, n = 7
 # 输出: [[1,2,4]]
-def combinationSum3(k,n):
+def combinationSum3_1(k,n):
     ans=[]
     path=[]
     def dfs(i,t):

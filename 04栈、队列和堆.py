@@ -1,6 +1,25 @@
 # time: 2025/2/27 9:59
 # author: YanJP
 from collections import deque
+# 一、栈（Stack）的典型应用
+# 1. 递归实现：每次递归调用压栈，返回时弹栈（如阶乘、斐波那契数列）。
+# 2. 括号匹配：用栈检查括号是否成对（如 {[()]}）。
+# 3. 处理运算符优先级（如 3 + 4 * 2 → 3 4 2 * +）。
+# 4. 前进/后退功能：用双栈实现（一个栈保存后退页面，另一个保存前进页面）。
+# 5. 文本编辑器撤销（Undo）：栈存储操作历史。
+
+# 二、队列（Queue）的典型应用
+# 1. 任务调度与消息传递：CPU 任务队列：操作系统按FIFO调度进程（如先到先服务算法）。
+# 2. 广度优先搜索（BFS）
+# 3. 缓冲区管理：打印队列，多个打印任务按提交顺序执行。
+
+# 三、堆的典型应用
+# 优先队列：快速获取或删除最高/低优先级元素（如任务调度）。（解决许多与优先级相关的问题）
+# 堆排序：时间复杂度 O(nlogn)，原地排序但不稳定。
+# Top K 问题：用最小堆维护当前最大的 K 个元素（或最大堆维护最小的 K 个）。
+
+
+
 # 单调栈：要计算的内容涉及到上一个或者下一个更大或者更小的元素
 
 # 739. 每日温度
@@ -20,7 +39,7 @@ def dailyTemperatures(temperatures: list[int]) -> list[int]:
         st.append(i)
     return ans
 def dailyTemperatures_forword(temperatures: list[int]) -> list[int]:
-    st=[] # 单调栈  存放下标
+    st=[] # 单调栈  存放下标 从下往上为递减的栈
     ans=[0]*len(temperatures)
     for i, t in enumerate(temperatures):
         while st and t>temperatures[st[-1]]:
@@ -39,8 +58,8 @@ def isValid( s: str) -> bool:
     mp={')':'(', '}':'{', ']':'['}
     for ss in s:
         if ss not in mp:
-            st.append(ss)
-        elif not st or st.pop() != mp[ss]: # 以防的是括号不匹配的情况(]
+            st.append(ss)  # 此时存的是左括号({[
+        elif not st or st.pop() != mp[ss]: # 如果ss是右括号会执行，以防的是括号不匹配的情况(]
             return False
     return not st # 以防的是全是左括号的情况({
 
@@ -80,12 +99,12 @@ def trap(height: list[int]) -> int:
 # 239. 滑动窗口最大值 （单调队列）
 def maxSlidingWindow(nums: list[int], k: int) -> list[int]:
     ans=[]
-    q=deque() # 存在的是下标
+    q=deque() # 存在的是下标，从左往右递增的队列
     for i, x in enumerate(nums):
         while q and nums[q[-1]]<=x: # x太大了 就存x pop队列的数
             q.pop()
         q.append(i)
-        if i-q[0]+1>k:
+        if i-q[0]+1>k: # pop出最新（左边）的元素
             q.popleft()
         if i>=k-1: # 从满足窗口大小后就开始存答案
             ans.append(nums[q[0]])
@@ -157,3 +176,13 @@ def largestRectangleArea(heights) -> int:
     for h, l, r in zip(heights, left, right):
         ans = max(ans, h * (r - l - 1))
     return ans
+
+# -----------------------堆----------------------------------------------------------
+# 1. 是一个完全二叉树：除最后一层外，其他层节点必须填满，最后一层节点从左到右排列
+# 2. 性质
+# 父节点：parent(i) = (i - 1) // 2
+# 左孩子：left_child(i) = 2i + 1
+# 右孩子：right_child(i) = 2i + 2
+# 最小堆（Min-Heap）：每个节点的值 ≤ 其子节点的值（根节点是最小值）。
+# 最大堆（Max-Heap）：每个节点的值 ≥ 其子节点的值（根节点是最大值）。
+

@@ -855,4 +855,24 @@ def minPathSum2(grid: list[list[int]]):
 #     def dfs(node,k):
 #         if node is None:
 #             return 0
-#         i
+
+# 判断是否是2的n次方  （5_17 高通手撕）
+def isPowerOfTwo(n: int) -> bool:
+    # 位运算法  例如：8 & 7 = 1000 & 0111 = 0000。
+    # return n > 0 and (n & (n - 1)) == 0
+
+    # 递推求解
+    # if n <= 0:
+    #     return False
+    # while n % 2 == 0:
+    #     n //= 2
+    # return n == 1
+
+    # dfs求解
+    if n <= 0:
+        return False
+    if n == 1:
+        return True
+    if n % 2 != 0:
+        return False
+    return isPowerOfTwo(n // 2)
