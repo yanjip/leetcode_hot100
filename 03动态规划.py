@@ -6,6 +6,7 @@ from functools import cache
 import time
 from math import isqrt
 
+
 # 198. 打家劫舍
 def rob(nums: list[int]):  # 超时，时间复杂度是指数级别
     def dfs(i):
