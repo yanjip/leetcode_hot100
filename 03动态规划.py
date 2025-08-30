@@ -1,13 +1,12 @@
 # time: 2025/2/18 9:35
 # author: YanJP
-# 198. 打家劫舍
 import bisect
 from collections import Counter, defaultdict
 from functools import cache
 import time
 from math import isqrt
 
-
+# 198. 打家劫舍
 def rob(nums: list[int]):  # 超时，时间复杂度是指数级别
     def dfs(i):
         if i<0:  # 不能写等于0
