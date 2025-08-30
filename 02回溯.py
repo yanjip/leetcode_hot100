@@ -57,11 +57,14 @@ def subsets2(nums):  # 不同的写法 从输入的角度（选还是不选）�
         path.pop()
     dfs(0)
     return ans
+# print(subsets2([1,2,3]))
 
 # 131. 分割回文串  （更适合采用枚举选哪个的方法求解，而括号生成那题更适合选或不选的方法）
 # 输入：s = "aab"
 # 输出：[["a","a","b"],["aa","b"]]
+# 思路是枚举逗号的位置，等价于枚举回文子串最后一个字符的位置，即s[i...j]
 def partition( s: str):
+    # 如果第一次选择的是"a",第二次是"ab"，发现不是回文串，所以ab就不会继续向下递归，到不了i==n的判断，因此不用担心ans添加了错误结果
     ans=[]
     path=[]
     n=len(s)
@@ -71,7 +74,7 @@ def partition( s: str):
             return
         for j in range(i,n):
             # 注意，不能写成for j in range(i+1,n) t=s[i:j]，因为最大j=n-1时，是s[i:j]=s[i:n-1],娶不到最后一个值
-            t=s[i:j+1]
+            t=s[i:j+1] # 为什么是j+1？如果写成了j，j==i时，t为空；j==n-1时，也取不到最后一个值。也就是说必须是j+1
             if t==t[::-1]:
                 path.append(t)
                 dfs(j+1)
@@ -89,7 +92,7 @@ def partition2( s: str):
         # 不选 i 和 i+1 之间的逗号（i=n-1 时一定要选）
         # 确保在处理到字符串末尾时强制分割，防止未处理的子串导致错误结果。若去掉该条件，递归会在末尾生成空路径，导致答案错误。
         if i<n-1:
-            dfs(i+1,start)
+            dfs(i+1,start) # 跳过 i
         t = s[start:i + 1]
         if t == t[::-1]:
             path.append(t)
@@ -104,7 +107,7 @@ def partition2( s: str):
 # 输入：nums = [1,2,2]
 # 输出：[[],[1],[1,2],[1,2,2],[2],[2,2]]
 #如果直接套用子集代码，结果是： [[],[1],[1,2],[1,2,2],[1,2],[2],[2,2],[2]]
-def subsetsWithDup(nums: list[int]):
+def subsetsWithDup(nums):
     nums.sort()
     ans = []
     path = []
@@ -278,6 +281,60 @@ def combinationSum2( candidates, target: int):
         path.pop()
     dfs(0, 0)
     return ans
+# ---------------直接采用DFS（递归）的解法-------------
+# 递归特点：
+# 每次调用 dfs()，都在探索一种可能的路径。
+# 每一层函数调用就是在尝试“添加一个数”，再交给下一层决定。
+# 有明确的终止条件（if total == target）。
+def combinationSum(candidates, target):
+    def dfs(start, path, total):
+        if total == target:
+            res.append(path)
+            return
+        if total > target:
+            return
+        for i in range(start, len(candidates)):
+            dfs(i, path + [candidates[i]], total + candidates[i])
+
+    res = []
+    dfs(0, [], 0)
+    return res
+# ---------------采用回溯的解法-------------
+# 回溯的关键点：
+# 使用了 path.pop() 把当前的选择撤回，这是“回溯”的核心操作。
+# 如果你不 pop，你在多个递归之间就会带着错误的状态。
+# 回溯 = DFS + 状态回退。
+def combinationSum(candidates, target):
+    def backtrack(start, path, total):
+        if total == target:
+            res.append(path[:])  # 不能写 res.append(path)
+            return
+        if total > target:
+            return
+        for i in range(start, len(candidates)):
+            path.append(candidates[i])
+            backtrack(i, path, total + candidates[i])  # 注意是 i，不是 i+1
+            path.pop()  # 回溯
+
+    res = []
+    backtrack(0, [], 0)
+    return res
+# ---------------采用动态规划的解法-------------
+# DP思路：
+# 把所有和为 i 的组合都保存到 dp[i]。
+# dp[t] += dp[t-c] + [c] 表示可以从前面的状态转移过来。
+# 典型的完全背包问题，是一种“记忆型”的方法。
+def combinationSum(candidates, target):
+    dp = [[] for _ in range(target + 1)]
+    dp[0] = [[]]
+
+    for c in candidates:
+        for t in range(c, target + 1):
+            for comb in dp[t - c]:
+                dp[t].append(comb + [c])
+
+    return dp[target]
+
 
 # 40. 组合总和 II （含重复元素）
 # 输入: candidates = [10,1,2,7,6,1,5], target = 8,
@@ -407,7 +464,7 @@ def generateParenthesis2(n: int):
 # --------------------------------------排列型回溯问题 （典型：N皇后）------------------------------------------
 # 和组合回溯的区别：{1,2}和{2,1}是同一种组合，但是排列型回溯问题中，{1,2}和{2,1}是不同的排列。
 # 46. 全排列
-def permute(nums: list[int]):
+def permute(nums):
     # 时间复杂度O(n*n!)
     ans=[]
     n=len(nums)
@@ -420,7 +477,7 @@ def permute(nums: list[int]):
             dfs(i+1,s-{j}) # s-{j}表示删除当前元素，避免重复 s.copy().remove(j)
     dfs(0,set(nums))
     return ans
-def permute2(nums: list[int]):
+def permute2(nums):
     ans=[]
     n=len(nums)
     path=[0]*n

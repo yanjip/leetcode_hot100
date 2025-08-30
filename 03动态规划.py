@@ -1,6 +1,7 @@
 # time: 2025/2/18 9:35
 # author: YanJP
 # 198. 打家劫舍
+import bisect
 from collections import Counter, defaultdict
 from functools import cache
 import time
@@ -15,6 +16,7 @@ def rob(nums: list[int]):  # 超时，时间复杂度是指数级别
     return dfs(len(nums)-1)
 def rob2(nums: list[int]):
     n=len(nums)
+    # 手动实现cache数组
     cache=[-1]*n
     def dfs(i):
         if i<0:  # 不能写等于0
@@ -140,16 +142,16 @@ def findTargetSumWays2(nums: list[int], target: int):
     if target%2 or target<0:
         return 0
     target//=2
-    dfs=[[0]*(target+1) for _ in range(n+1)]  # 使用 n+1 可以确保在遍历所有元素时不会出现索引越界的问题
+    dfs=[[0]*(target+1) for _ in range(n+1)]  # 使用 n+1 可以确保在遍历所有元素时不会出现索引越界的问题. 从0-target一共target+1个数
     dfs[0][0]=1  # 很重要，对应上述dfs做法，其中i<0 and target==0 的情况,答案为1。但由于上面一行索引加了1，因此对应的是i==0 的情况
-    for i in range(n):
+    for i, x in enumerate(nums):
         for  j in range(target+1):
             if j<nums[i]:
                 dfs[i+1][j]=dfs[i][j]
             else:
                 dfs[i+1][j]=dfs[i][j]+dfs[i][j-nums[i]]
     print(dfs)
-    return dfs[-1][-1]
+    return dfs[-1][-1] # 等价与dfs[-1][-1]
 
 # nums=[1,1,1,1,1]
 # target=int(input().strip())
@@ -312,7 +314,8 @@ def minDistance_ditui(word1: str, word2: str) -> int:
     n = len(word2)
     # dfs[i][j] 表示将 word1 的前 i 个字符转换为 word2 的前 j 个字符所需的最小操作数。
     dfs=[[0]*(n+1) for _ in range(m+1)]
-    dfs[0]=[i for i in range(n+1)]
+    # 初始化n+1是因为需要取0-n的n+1个数！
+    dfs[0]=[i for i in range(n+1)] # dfs[0]=list(range(n+1))   比如word1是空串，word2是"abc", 则dfs[0][3]=3
     for i, x in enumerate(word1):
         dfs[i+1][0]=i+1
         for j, y in enumerate(word2):
@@ -366,6 +369,20 @@ def lengthOfLIS_ditui(nums: list[int]) -> int:
                 dfs[i]=max(dfs[i], dfs[j])
         dfs[i]+=1
     return max(dfs)
+
+# 贪心+二分：
+def lengthOfLIS_greedy(nums: list[int]) -> int:
+    g=[]
+    # g维护的就是最长子序列，需要随时更新最小值，从而扩展最长子序列
+    for x in nums:
+        j=bisect.bisect_left(g, x) # bisect_left返回小于等于x的最大的索引
+        if j==len(g):
+            g.append(x)
+        else:
+            g[j]=x
+    return len(g)
+
+
 # nums = [10,9,2,5,3,7,101,18]
 # start_time = time.perf_counter()
 # print(lengthOfLIS(nums))

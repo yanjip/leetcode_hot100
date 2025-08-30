@@ -9,12 +9,16 @@ class TreeNode(object):
         self.left = left
         self.right = right
 # 104. 二叉树的最大深度
+# 1. 自底向上，把子树的答案层层传递回去，最后得到根节点的深度。
+# 问题天然满足“子问题 → 父问题”的形式，可以直接递归返回。重点是这个归字
 def maxDepth(root: Optional[TreeNode]) -> int:
     if root is None:
         return 0
     left=maxDepth(root.left)
     right=maxDepth(root.right)
     return max(left,right)+1
+
+# 2. 递归函数本身不返回结果，而是通过参数 cnt 记录当前路径的深度，同时用外部变量 ans 保留全局最优解。
 def maxDepth2(root: Optional[TreeNode]) -> int:
     ans = 0
     def dfs(node, cnt):
@@ -104,9 +108,9 @@ def lowestCommonAncestor_search_Tree(root, p, q):
     # 不需要判断当前节点值是否为空。因为题目规定p q都在树中，因此，按照以下递归方式，一定能找到p和q，或者说不可能递归到空节点
     x = root.val
     if x>p.val and x>q.val: # p和q肯定都在左子树
-        return lowestCommonAncestor(root.left,p,q)
+        return lowestCommonAncestor_search_Tree(root.left,p,q)
     if x<p.val and x<q.val:  # p和q肯定都在右子树
-        return lowestCommonAncestor(root.right,p,q)
+        return lowestCommonAncestor_search_Tree(root.right,p,q)
     return root
 
 # 94. 二叉树的中序遍历

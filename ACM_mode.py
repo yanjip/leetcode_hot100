@@ -53,7 +53,7 @@ def timer(func):
 def test(a,b):
     print(a+b)
     time.sleep(1)
-test(1,5,a=3)
+test(1,5)
 
 res = [(1, 3), (2, 2), (3, 1)]
 res.sort(key=lambda x: x[1])

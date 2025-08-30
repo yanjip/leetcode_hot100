@@ -268,6 +268,49 @@ def longestPalindrome_dfs( s: str) -> str:
 # 分割等和子集 返回是否可以分割 选或不选的思路
 # 答案： dfs(n-1, s//2)
 # if i<0: return s==0. if nums[i]>s return dfs(i-1,s). return dfs(i-1, s) or dfs(i-1, s-nums[i])
+
+# 子集回溯：枚举选哪个 dfs(0)
+# 每次都要执行append：ans.append(path[:]). for j in range(i,n): path.append(nums[j]) dfs(j+1) pop
+
+# 分割回文串 枚举选哪个 dfs(0)
+# if i==n: ans.append(path[:]) for j in range(i,n): if s[i:j+1]==s[i:j+1][::-1]: path.append(s[i:j+1]) dfs(j+1) path.pop()
+# 总结
+# 和为 K 的子数组：前缀和求解
+
+# 最长公共子序列LCS：dfs(m-1,n-1) 选或不选
+# dp[i][j] = dp[i-1][j-1]+1 if s1[i] == s2[j] else max(dp[i-1][j], dp[i][j-1])
+
+
+# 最长递增子序列LCS：max(dfs(i)) 枚举选哪个的思路 (以i结尾
+# for j in range(i): if nums[j] < nums[i]: res=max(res, dfs(j)) return res+1
+
+# 最长连续递增子序列LICS：max(dfs(i)) (以i结尾
+# if i==0 return 1 if nums[i]>nums[i-1] return dfs(i-1)+1 else return 1
+
+# 最长子数组和 前缀和（维护一个最小的前缀和）+dfs max(dfs(i))
+# dfs[i]=max(dp[i-1]+nums[i], nums[i]) if i<0 return 0
+
+# 最长回文子序列：dfs(0,n-1) 表示s[i..j]的最长回文子序列
+# if i>j: return 0 if i==j: return 1 if s[i]==s[j]: return dfs(i+1,j-1)+2 else: return max(dfs(i+1,j), dfs(i,j-1))
+
+# 最长回文子串：dfs(j,i) 表示子串s[j:i]是否为回文串 j \in [0,i] 且for循环遍历
+# 入参：if dfs(j,i) and i-j+1>max_len: start=j max_len=i-j+1 return s[start:start+max_len]
+# dfs：if i == j: return True elif i - 1 == j: return s[i] == s[j] else: return dfs(j+1, i-1) and s[i] == s[j]
+
+# 01背包：dfs(n-1, cap) 选或不选
+# if weights[i]>c: return dfs(i-1, cap) else: return max(dfs(i-1, cap), dfs(i-1, cap-weights[i])+values[i])
+
+# 目标和：返回的是方案数 target+=sum(nums) target//=2
+# 入参：dfs(n-1,target)
+# if i<0: return 1 if target==0 else 0 return dfs(i-1,target)+dfs(i-1,target-nums[i])
+
+# 零钱兑换 返回凑成amount的最小硬币数量 完全背包
+# 答案：ans=dfs(n-1, amount) return ans if ans<=inf else -1
+# if i<0: return 0 if target==0 else inf. if target<coins[i]: return dfs(i-1, target). return min(dfs(i-1, target), dfs(i, target-coins[i])+1)
+
+# 分割等和子集 返回是否可以分割 选或不选的思路
+# 答案： dfs(n-1, s//2)
+# if i<0: return s==0. if nums[i]>s return dfs(i-1,s). return dfs(i-1, s) or dfs(i-1, s-nums[i])
 # ——————————————————————————回溯问题————————————————————————————————
 # 子集回溯：枚举选哪个 dfs(0)
 # 每次都要执行append：ans.append(path[:]). for j in range(i,n): path.append(nums[j]) dfs(j+1) pop
