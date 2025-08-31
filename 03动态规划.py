@@ -49,7 +49,7 @@ def rob3(self, nums: list[int]) -> int:
 def climbStairs( n: int) -> int:
     # @cache
     # def dfs(i):
-    #     if i==0 or i==1:
+    #     if i==0 or i==1:  # 不知道dfs(0)应该是多少时，可以倒推2=dfs(2)=dfs(2-1)+dfs(2-2)
     #         return 1
     #     return dfs(i-1)+dfs(i-2)
     # return dfs(n)
@@ -74,6 +74,7 @@ def climbStairs( n: int) -> int:
     # for i in range(2,n+1):
     #     dfs[i]=dfs[i-1]+dfs[i-2]
     # return dfs[n]
+
 
 # 377. 组合总和 Ⅳ
 # 给你一个由 不同 整数组成的数组 nums ，和一个目标整数 target 。请你从 nums 中找出并返回总和为 target 的元素组合的个数。
