@@ -13,8 +13,8 @@ from collections import deque
 # https://www.bilibili.com/video/BV1hZc5eWEsV/ 视频讲的非常好
 def canFinish(numCourses: int, prerequisites) -> bool:
     # 广度优先遍历
-    indegr = [0] * numCourses # 入度表
-    adjacency = [[] for _ in range(numCourses)]  # 其实就是建立出度表
+    indegr = [0] * numCourses # 入度表 第i个位置的入度为indegr[i]，等于0表示当前i课程没有依赖的课程
+    adjacency = [[] for _ in range(numCourses)]  # 其实就是建立出度表，修完pre课程就有资格修adjacency[pre]存的课程
     queue = deque()
     for cur, pre in prerequisites:
         indegr[cur] += 1
@@ -28,7 +28,9 @@ def canFinish(numCourses: int, prerequisites) -> bool:
         for cur in adjacency[pre]:
             indegr[cur] -= 1
             if indegr[cur] == 0:
-                queue.append(cur)
-    # 若课程安排图中存在环，一定有节点的入度始终不为 0。这时候queue就append不了所有节点，所以numCourses就一直不会减为0，所以最后会返回False
+                queue.append(cur) # 入度为0的节点入队
+    # 若课程安排图中存在环，一定有节点的入度始终不为 0，也就是说indegr始终有两个元素不为0。这时候queue就append不了所有节点，所以numCourses就一直不会减为0，所以最后会返回False
     return not numCourses
 
+# print(canFinish(6, [[3, 0], [3, 1], [4, 1], [4, 2], [5, 3], [5, 4]]))
+print(canFinish(4, [[3, 1], [1, 3]]))

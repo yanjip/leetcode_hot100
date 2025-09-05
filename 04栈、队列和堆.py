@@ -29,7 +29,7 @@ from collections import deque
 # 输出: [1,1,1,0]
 def dailyTemperatures(temperatures: list[int]) -> list[int]:
     st=[] # 单调栈  存放下标 从下往上为递减的栈
-    ans=[0]*len(temperatures)
+    ans=[0]*len(temperatures)  # 这里初始化0也很关键
     for i in range(len(temperatures)-1,-1,-1):
         t=temperatures[i]
         while st and t>=temperatures[st[-1]]:  # 先pop更新单调栈，再push当前值，即下面的append
@@ -54,13 +54,14 @@ def dailyTemperatures_forword(temperatures: list[int]) -> list[int]:
 # 给定一个只包括 '('，')'，'{'，'}'，'['，']' 的字符串 s ，判断字符串是否有效。
 def isValid( s: str) -> bool:
     if len(s)%2: return False
-    st=[]
+    st=[] # 只存左括号
     mp={')':'(', '}':'{', ']':'['}
     for ss in s:
-        if ss not in mp:
+        if ss not in mp: # 如果是左括号
             st.append(ss)  # 此时存的是左括号({[
-        elif not st or st.pop() != mp[ss]: # 如果ss是右括号会执行，以防的是括号不匹配的情况(]
-            return False
+        else:  # ss是右括号
+            if not st or st.pop() != mp[ss]: # 如果ss是右括号会执行，以防的是括号不匹配的情况(]
+                return False
     return not st # 以防的是全是左括号的情况({
 
 # 入栈对应的右括号，且不使用map的写法
@@ -97,14 +98,17 @@ def trap(height: list[int]) -> int:
 # print(trap(height))
 
 # 239. 滑动窗口最大值 （单调队列）
+# 给你一个整数数组 nums，有一个大小为 k 的滑动窗口从数组的最左侧移动到数组的最右侧。
+# 你只可以看到在滑动窗口内的 k 个数字。滑动窗口每次只向右移动一位。
+# 返回 滑动窗口中的最大值 。
 def maxSlidingWindow(nums: list[int], k: int) -> list[int]:
     ans=[]
-    q=deque() # 存在的是下标，从左往右递增的队列
+    q=deque() # 存在的是下标，从左往右递减的队列
     for i, x in enumerate(nums):
         while q and nums[q[-1]]<=x: # x太大了 就存x pop队列的数
             q.pop()
         q.append(i)
-        if i-q[0]+1>k: # pop出最新（左边）的元素
+        if i-q[0]+1>k: # pop出（左边）的元素
             q.popleft()
         if i>=k-1: # 从满足窗口大小后就开始存答案
             ans.append(nums[q[0]])
@@ -120,7 +124,7 @@ def decodeString( s):
     for c in s:
         if c.isdigit():
             num=num*10+int(c)
-        elif c=='[':
+        elif c=='[': # 把之前的数字和字符串存起来
             stack.append((res, num))
             res,num="", 0
         elif c==']':

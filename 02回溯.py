@@ -28,7 +28,7 @@ def letterCombinations(digits: str) :
     return ans
 
 # 78. 子集
-# 时间复杂度取决于生成的所有可能的子集的数量和每次递归的时间复杂度。时间复杂度O(n*2^n)
+# 时间复杂度取决于生成的所有可能的子集的数量和每次递归的时间复杂度。时间复杂度O(n*2^n) （选或者不选的角度分析 所以是2^n）
 def subsets(nums):  # 从结果的角度进行回溯 for循环执行
     ans = []
     path = [] # 全局变量，所有后面要用copy ()
@@ -103,6 +103,21 @@ def partition2( s: str):
 # inp_=input().strip()
 # print(partition2(inp_))
 
+# 百度手撕 输出s的所有连续回文子串
+def continuous_huiwen(s):
+    n = len(s)
+    out = []
+    def expand(l, r):
+    # 以[L，r]为中心向两侧扩展，找到所有回文并按发现顺序加入
+        while l >= 0 and r < n and s[l] == s[r]:
+            out.append(s[l:r + 1])
+            l -= 1
+            r += 1
+    for i in range(n):
+        expand(i, i)    # 奇数长度
+        expand(i, i + 1)  # 偶数长度
+    return out
+
 # 90. 子集 II (含有重复元素)
 # 输入：nums = [1,2,2]
 # 输出：[[],[1],[1,2],[1,2,2],[2],[2,2]]
@@ -124,6 +139,7 @@ def subsetsWithDup(nums):
     return ans
 
 # 79. 单词搜索
+# 给定一个 m x n 二维字符网格 board 和一个字符串单词 word 。如果 word 存在于网格中，返回 true ；否则，返回 false 。同一个单元格内的字母不允许被重复使用。
 # 总结：自己写忽略了三个问题：一是什么时候返回True没写明白；二是递归入口是由mn种情况；三是剪枝的判断board[i][j]!=word[k]时就可直接返回False了
 # 时间复杂度:O(mn3^k)，其中 m和n分别为grid 的行数和列数，k是word 的长度。
 # 除了递归入口，其余递归至多有3个分支(因为至少有一个方向是之前走过的)，所以每次递归(回溯)的时间复杂度为O(3^k)，
@@ -337,6 +353,7 @@ def combinationSum(candidates, target):
 
 
 # 40. 组合总和 II （含重复元素）
+# candidates 中的每个数字在每个组合中只能使用 一次 。
 # 输入: candidates = [10,1,2,7,6,1,5], target = 8,
 # 输出: [[1,1,6],[1,2,5],[1,7],[2,6]]
 # 直接套用的答案为：[[5,1,2],[5,2,1],[1,6,1],[1,7],[6,2],[7,1]]，产生重复
@@ -355,6 +372,13 @@ def combinationSum2_1(candidates, target: int) :
         elif target - ss < candidates[i]:
             return
         for j in range(i,-1,-1):
+            # 如果不加这个判断，DFS 在同一层循环里会把前一个 1 和后一个 1 都作为起点再递归一次，最后得到完全一样的组合，导致结果里有重复解。
+            # 这句判断的含义是：
+            # 在同一层循环中，如果某个数和它右边的数相等（candidates[j] == candidates[j+1]），并且 j < i 说明它不是本层第一个被选择的数，就跳过它。
+            # 这样保证了相同数值在同一层递归里只会被用一次。
+            # candidates = [2,1,1], target=3
+            # 如果不加去重条件，可能会得到两个 [1,2]。
+            # 加了之后，就只会保留一个 [1,2]。
             if j<i and candidates[j]==candidates[j+1]:
                 continue
             path.append(candidates[j])
@@ -362,6 +386,7 @@ def combinationSum2_1(candidates, target: int) :
             path.pop()
     dfs(n-1)
     return ans
+# print(combinationSum2_1(candidates = [10,1,2,7,6,1,5], target = 8))
 # 另一种写法
 def combinationSum2_2(candidates, target: int):
     candidates.sort()
@@ -477,6 +502,24 @@ def permute(nums):
             dfs(i+1,s-{j}) # s-{j}表示删除当前元素，避免重复 s.copy().remove(j)
     dfs(0,set(nums))
     return ans
+# print(permute([1,2,3]))
+
+# 改成长度为k的全排列
+def permute_k(nums, k):
+    ans = []
+    path = []
+    def dfs(s):
+        if len(path) == k:  # 达到长度 k
+            ans.append(path.copy())
+            return
+        for j in s:
+            path.append(j)
+            dfs(s - {j})  # 去掉已用元素
+            path.pop()
+    dfs(set(nums))
+    return ans
+print(permute_k([1,2,3],2))
+
 def permute2(nums):
     ans=[]
     n=len(nums)

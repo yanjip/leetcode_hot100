@@ -101,3 +101,29 @@ def findMin(nums: list[int]) -> int:
             left = mid + 1
     return nums[left]
 
+# 百度二面题 求float x的立方根
+def main(x):
+    # 处理0的立方根
+    if x == 0:
+        return 0.0
+    # 确定符号并取绝对值
+    sign = 1 if x > 0 else -1
+    x_abs = abs(x)
+    # 统一设置初始区间：确保low < high
+    # 当 |x| ≥ 1 时：立方根范围在 [0, |x|] 之间
+    # 当 0 < |x| < 1 时：立方根范围在 [0,1] 之间
+    low = 0.0
+    high = max(1.0, x_abs)  # 处理0 < |x| < 1的情况
+    # 二分查找
+    while high - low > 1e-8:
+        mid = (low + high) / 2
+        mid_cubed = mid ** 3
+        if mid_cubed < x_abs:
+            low = mid
+        else:
+            high = mid
+    # 最终结果在low和high之间
+    result = (low + high) / 2 * sign
+    return round(result, 3)
+# ans = main(64.1)
+# print(ans)

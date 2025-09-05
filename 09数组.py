@@ -1,8 +1,24 @@
 # time: 2025/4/4 8:56
 # author: YanJP
 from collections import defaultdict,Counter
+from typing import List
 
-# 167. 两数之和 II - 输入有序数组 （也可认为是相向双指针）
+# 1. 两数之和
+# 输入：nums = [3,2,4], target = 6
+# 输出：[1,2]
+class Solution:
+    def twoSum(self, nums: List[int], target: int) -> List[int]:
+        idx = {}
+        for j, x in enumerate(nums):
+            if target - x in idx:
+                return [idx[target - x], j]
+            idx[x] = j
+
+
+# 167. 两数之和 II - 输入有序数组 （也可认为是相向双指针） （非hot100
+# 输入：numbers = [2,7,11,15], target = 9
+# 输出：[1,2]
+# 解释：2 与 7 之和等于目标数 9 。因此 index1 = 1, index2 = 2 。返回 [1, 2] 。
 def twoSum(numbers, target: int) :
     left = 0
     right = len(numbers) - 1
@@ -81,6 +97,7 @@ def minSubArrayLen2(target: int, nums: list[int]) -> int:
 
 # 713. 乘积小于 K 的子数组
 # 给你一个整数数组 nums 和一个整数 k ，请你返回子数组内所有元素的乘积严格小于 k 的连续子数组的数目。
+# 和560不同的是，本题由于算乘积，且数组均大于等于1，因此，前缀乘积是单调增的，只能逐步往后扩展找到满足的子数组
 def numSubarrayProductLessThanK( nums: list[int], k: int) -> int:
     if k<=1: return 0
     prob=1
@@ -95,6 +112,7 @@ def numSubarrayProductLessThanK( nums: list[int], k: int) -> int:
     return ans
 
 # 560. 和为 K 的子数组（前缀和、哈希表）  注：子数组和子串是连续的，子序列不连续
+# 数组可能是负数
 def subarraySum( nums: list[int], k: int) -> int:
     #  如     1 1 0 1 1，k=2
     # 前缀和:0 1 2 2 3 4, 第二个2减0=2,得到一个子数组; 4减第一个2=2，得到一个子数组; 4-第二个2=2，得到一个子数组;...

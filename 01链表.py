@@ -95,12 +95,13 @@ def hasCycle(head: ListNode) -> bool:
     return False
 
 # 142. 环形链表 II
+# 给定一个链表的头节点  head ，返回链表开始入环的第一个节点。
 # 分析：快慢指针，快指针每次走两步，慢指针每次走一步，如果有环，快慢指针会在环内相遇，否则会到达链表尾部，返回None
 # 环链表前部长度设为a，环起点到相遇点长度设为b，环剩下的长度为c，
 # 快指针走的长度为a+b+k(b+c)，环长的整数倍（注意，在环内走的时候，计算相对速度，即慢指针在相遇点不动，快指针每次走一步）
 # 慢指针走的长度为a+b，
 # 因为快指针走的长度是慢指针的两倍，所以2a+2b = a+b+k(b+c)，==> a-c=(k-1)(b+c)
-# 快指针和慢指针相遇后，慢指针再走c步，头结点走c步。头结点走完c步之后，离环入口的距离是环长的整数倍，则两者一起走，一定会在入口相遇
+# 快指针和慢指针相遇后，慢指针再走c步到入环点，头结点走c步得到a-c的位置。头结点走完c步之后，离环入口的距离是环长的整数倍，则两者一起走，一定会在入口相遇
 
 # 还有一个点需要注意，慢指针进入环后，此时离相遇时，其移动的距离一定不会超过环的长度，（原因通过相对速度分析得出）
 def detectCycle(head: ListNode) -> ListNode:
@@ -141,7 +142,7 @@ def deleteDuplicates( head):
     if head is None:
         return head
     cur=head
-    while cur.next:
+    while cur.next: # 把cur停在最后一个有值的node上
         if cur.val==cur.next.val:
             cur.next=cur.next.next
         else:
@@ -191,13 +192,17 @@ def middleNode(head):
 # 2. 两数相加
 # 输入：l1 = [2,4,3], l2 = [5,6,4]
 # 输出：[7,0,8]
-# 解释：342 + 465 = 807. （反的顺序刚好从个位开始相加）
+# 解释：342 + 465 = 807. （刚好从个位开始相加 2+5=7）
 # 修改原链表写法
 def addTwoNumbers( l1: Optional[ListNode], l2: Optional[ListNode], carry=0) -> Optional[ListNode]:
     if l1 is None and l2 is None:
         return ListNode(carry) if carry else None
     if l1 is None: # 如果 l1 是空的，那么此时 l2 一定不是空节点
         l1, l2= l2, l1
+    # if l2:
+    #     s=carry+l1.val+l2.val
+    # else:
+    #     s=carry+l1.val
     s=carry+l1.val + (l2.val if l2 else 0)
     l1.val = s%10
     l1.next=addTwoNumbers(l1.next, l2.next if l2 else None, s//10)

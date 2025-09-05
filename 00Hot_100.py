@@ -521,3 +521,25 @@ def jump(nums: list[int]) -> int:
             cur_right = next_right
             ans += 1
     return ans
+
+# 146. LRU 缓存
+# 请你设计并实现一个满足  LRU (最近最少使用) 缓存 约束的数据结构。
+# OrderedDict = dict + 双向链表
+from collections import OrderedDict
+class LRUCache(object):
+    def __init__(self, capacity):
+        self.capacity = capacity
+        self.cache = OrderedDict()
+
+    def get(self, key):
+        if key not in self.cache:
+            return -1
+        self.cache.move_to_end(key, last = False)
+        return self.cache[key]
+
+    def put(self, key, value):
+        self.cache[key]=value # 添加 key value 或者更新 value
+        # last=False 表示移到链表头
+        self.cache.move_to_end(key, last=False)
+        if len(self.cache) > self.capacity:
+            self.cache.popitem() # 去掉最后一本书

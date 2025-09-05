@@ -209,7 +209,8 @@ def kthSmallest(root, k: int) -> int:
         if left != -1: # 不等于-1，说明左子树已经找到答案，直接返回答案.等于-1继续处理
             return left
         nonlocal k
-        k -= 1             #!!!!!!!!!!!!!!!!!dfs就是从上往下递归，从下往上返回答案
+        k -= 1             #!!!!!!!!!!!!!!!!!dfs就是从上往下递归，从下往上返回答案，上面会一直先遍历到最左边的叶子节点而不更改k，
+        # 然后在归的过程中才依次减k，k为0时，返回答案
         if k == 0:
             return node.val
         return dfs(node.right)  # 右子树会返回答案或者 -1
@@ -233,7 +234,6 @@ def kthSmallest2(root: Optional[TreeNode], k: int) -> int:
     return result
 def kthSmallest3(root, k):
     ans = []
-    global ans
     def dfs(node):
         if node is None:
             return
@@ -257,21 +257,22 @@ def kthSmallest3(root, k):
     # 对于节点 3，它没有左子树和右子树，所以返回 3。
     # 对于节点 4，它没有左子树和右子树，所以返回 4。
     # 对于节点 2，它的左子树是 3，右子树是 4。展开后，链表为 2 -> 3 -> 4，返回 4。
+# 分治解法
 def flatten(root) -> None:
-    """
-    Do not return anything, modify root in-place instead.
-    """
     if root is None:
         return None
+    # DFS 需要返回链表的尾节点。
     left_tail=flatten(root.left)
     right_tail=flatten(root.right)
     if left_tail:
-        left_tail.right=root.right
-        root.right=root.left
+        left_tail.right=root.right # 结合上面的2 3 4例子来说，先将3的右子树指向2的右子树4，即3 -> 4
+        root.right=root.left  # 然后将2的右子树指向3，即2 -> 3
         root.left=None
     return right_tail or left_tail or root  # 要注意顺序
 
 # # 方法二：头插法
+# 按照右子树 - 左子树 - 根的顺序 DFS 这棵树。
+# DFS 的同时，记录当前链表的头节点为 head。一开始 head 是空节点。
 class Solution2:
     head=None
     def flatten(self, root) -> None:

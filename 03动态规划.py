@@ -49,7 +49,7 @@ def rob3(self, nums: list[int]) -> int:
 def climbStairs( n: int) -> int:
     # @cache
     # def dfs(i):
-    #     if i==0 or i==1:  # 不知道dfs(0)应该是多少时，可以倒推2=dfs(2)=dfs(2-1)+dfs(2-2)
+    #     if i==0 or i==1:  # 不知道dfs(0)应该是多少时，可以倒推1=dfs(1)   2=dfs(2)=dfs(2-1)+dfs(2-2)
     #         return 1
     #     return dfs(i-1)+dfs(i-2)
     # return dfs(n)
