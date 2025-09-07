@@ -47,6 +47,8 @@ def rob3(self, nums: list[int]) -> int:
 # 假设你正在爬楼梯。需要 n 阶你才能到达楼顶。
 # 每次你可以爬 1 或 2 个台阶。你有多少种不同的方法可以爬到楼顶呢？
 def climbStairs( n: int) -> int:
+    # 对于不加缓存的dfs写法:每次调用会分裂成两个子问题，递归树是一棵二叉树。时间复杂度 = O(2^n)。
+    #     记忆化搜索dfs: 时间复杂度 = O(n)。
     # @cache
     # def dfs(i):
     #     if i==0 or i==1:  # 不知道dfs(0)应该是多少时，可以倒推1=dfs(1)   2=dfs(2)=dfs(2-1)+dfs(2-2)
@@ -200,6 +202,9 @@ coins=[3,7,405,436]
 
 # 279. 完全平方数 （完全背包问题）
 # 给你一个整数 n ，返回 和为 n 的完全平方数的最少数量 。
+# 输入：n = 13
+# 输出：2
+# 解释：13 = 4 + 9
 @cache  # 写在外面，多个测试数据之间可以共享，减少计算量
 def dfs(i, j):  # 定义 dfs(i,j) 表示从前 i 个完全平方数中选一些数（可以重复选），满足元素和恰好等于 j，最少要选的数字个数。
     if i == 0:
@@ -248,7 +253,7 @@ def canPartition2(nums: list[int]) -> bool:
     return dfs[-1][-1]
 
 # https://www.bilibili.com/video/BV1TM4y1o7ug
-# 1143. 最长公共子序列
+# 1143. 最长公共子序列 LCS  线性DP问题
 # 计算复杂度：O(mn) 状态个数 (mn)* 每个状态的计算时间(1)
 def longestCommonSubsequence_huisu(text1: str, text2: str) -> int:
     m=len(text1)
@@ -279,7 +284,7 @@ def longestCommonSubsequence2(text1: str, text2: str) -> int:  # 注意和上面
     len2=len(text2)
     dfs=[[0]*(len2+1) for _ in range(len1+1)]
     for i,x in enumerate(text1):
-        for j, y in enumerate(text1):
+        for j, y in enumerate(text2):
             if x==y:
                 dfs[i+1][j+1]=dfs[i][j]+1
             else:
@@ -318,7 +323,7 @@ def minDistance_ditui(word1: str, word2: str) -> int:
     # 初始化n+1是因为需要取0-n的n+1个数！
     dfs[0]=[i for i in range(n+1)] # dfs[0]=list(range(n+1))   比如word1是空串，word2是"abc", 则dfs[0][3]=3
     for i, x in enumerate(word1):
-        dfs[i+1][0]=i+1
+        dfs[i+1][0]=i+1  # 和上面同理，比如word1是"abc", word2是空串，则dfs[3][0]=3
         for j, y in enumerate(word2):
             if x==y:
                 dfs[i+1][j+1]=dfs[i][j]
@@ -330,6 +335,8 @@ def minDistance_ditui(word1: str, word2: str) -> int:
 # print(minDistance_ditui(word1,word2))
 
 # 583. 两个字符串的删除操作
+# 给定两个单词 word1 和 word2 ，返回使得 word1 和  word2 相同所需的最小步数。
+# 每步 可以删除任意一个字符串中的一个字符。
 def minDistance_583( word1: str, word2: str) -> int:
     m=len(word1)
     n=len(word2)
@@ -341,11 +348,11 @@ def minDistance_583( word1: str, word2: str) -> int:
             return dfs(i-1,j-1)
         return min(dfs(i-1,j)+1, dfs(i,j-1)+1, dfs(i-1,j-1)+2)
     return dfs(m-1,n-1)
-word1 = "sea"
-word2 = "eat"
-print(minDistance_583(word1,word2))
+# word1 = "sea"
+# word2 = "eat"
+# print(minDistance_583(word1,word2)) #2  第一步将 "sea" 变为 "ea" ，第二步将 "eat "变为 "ea"
 
-# 300. 最长递增子序列 LIS
+# 300. 最长递增子序列 LIS ——也是线性DP问题
 # 思路1: 选或不选 为了比大小，需要知道上一个选的数字(最长公共子序列那个题适合用这种方法)
 # 思路2: 枚举选哪个 比较当前选的数字和下一个要选的数字(当前题采用的方法，可以少维护一个变量）
 def lengthOfLIS(nums: list[int]) -> int:  # 时间复杂度：O(n^2)
@@ -361,6 +368,7 @@ def lengthOfLIS(nums: list[int]) -> int:  # 时间复杂度：O(n^2)
     for i in range(n):
         ans=max(ans,dfs(i))
     return ans
+    # return max(dfs(i) for i in range(n))
 def lengthOfLIS_ditui(nums: list[int]) -> int:
     n=len(nums)
     dfs=[0]*(n)
@@ -428,6 +436,10 @@ def find_length_of_lcis_dfs2(nums):
     return max_length
 
 # 53. 最大子数组和 (腾讯面试题）三种解法
+# 给你一个整数数组 nums ，请你找出一个具有最大和的连续子数组（子数组最少包含一个元素），返回其最大和。
+# 输入：nums = [-2,1,-3,4,-1,2,1,-5,4]
+# 输出：6
+# 解释：连续子数组 [4,-1,2,1] 的和最大，为 6
 def maxSubArray( nums: list[int]) -> int:
     ans = -float("inf")
     min_pre_sum = pre_sum = 0
@@ -452,6 +464,9 @@ def maxSubArray_dp( nums: list[int]) -> int:
     return max(f)
 
 # 152. 乘积最大子数组 （对比上面一个题）
+# 输入: nums = [2,3,-2,4]
+# 输出: 6
+# 解释: 子数组 [2,3] 有最大乘积 6。
 def maxProduct( nums: list[int]) -> int:
     n = len(nums)
     @cache
@@ -492,7 +507,10 @@ def maxProduct3(nums: list[int]) -> int:
         ans=max(ans,fmax)
     return ans
 
-# 买卖股票的最佳时机 只能买卖一次股票
+# ---------------------状态机DP：买卖股票系列---------------------------------------------
+# 121. 买卖股票的最佳时机 只能买卖一次股票
+# 输入：[7,1,5,3,6,4]
+# 输出：5 （6-1）
 def maxProfit_once( prices: list[int]) -> int:
     if not prices: return 0
     maxPro=0
@@ -517,9 +535,15 @@ def maxProfit2( prices: list[int]) -> int:
         # 由于第i-1天的结束就是第i天的开始, dfs(i-1,·)也表示到第i天开始时的最大利润
         if i<0:
             return -float("inf") if hold else 0
+        # 如果第i天持有股票，对应的选择一是：在这一天不操作，因此返回的dfs(i,True)对应的是dfs(i-1,True)
+        #     对应的选择二是：在这一天选择买入股票，因此返回的dfs(i,True)对应是dfs(i-1,False) - prices[i]
         if hold:
             return max(dfs(i-1,hold),dfs(i-1,False)-prices[i])  # 如果题目改成含冷冻期(卖出后冷冻一天,即买入股票前一天不能卖出)，则直接改成dfs(i-2,False)-prices[i]
+
+        # 如果第i天不持有股票，对应的选择一是：在这一天没有操作，因此对应的是dfs(i-1,False)
+        #   对应的选择二是：在这一天卖出了股票，因此对应是dfs(i-1,True)+prices[i]
         return max(dfs(i-1,False),dfs(i-1,True)+prices[i])
+
     return dfs(n-1,False) # 最后一天肯定是不持有股票利润最大
 def maxProfit2_ditui( prices: list[int]) -> int:
     n=len(prices)
@@ -592,6 +616,85 @@ def longestPalindromeSubseq_ditui(s: str) -> int:
 # s=input().strip()
 # print(longestPalindromeSubseq(s))
 
+
+# 5. 最长回文子串
+# 输入：s = "babad"
+# 输出："bab"
+# 解释："aba" 同样是符合题意的答案。
+def longestPalindrome( s: str) -> str:
+    n = len(s)
+    ans = ''
+    def expand(l, r):
+        # 以[L，r]为中心向两侧扩展
+        while l >= 0 and r < n and s[l] == s[r]:
+            nonlocal ans
+            if len(s[l:r + 1]) > len(ans):
+                ans = s[l:r + 1]
+            l -= 1
+            r += 1
+    for i in range(n):
+        expand(i, i)  # 奇数长度
+        expand(i, i + 1)  # 偶数长度
+    return ans
+
+# 5. 最长回文子串 （参考最长回文子序列的写法，但复杂度过高）
+def longestPalindromeSubstring(s: str) -> str:
+    n = len(s)
+    @cache
+    def dfs(i, j):
+        # 返回 s[i..j] 的最长回文子串，如果不存在返回 ""
+        if i > j:
+            return ""
+        if i == j:
+            return s[i]
+        if s[i] == s[j]:
+            inner = dfs(i + 1, j - 1)
+            # 如果内部是完整的回文，拼接首尾
+            if len(inner) == j - i - 1:
+                return s[i] + inner + s[j]
+        # 如果 s[i] != s[j]，这个区间不能作为回文子串
+        # 但我们仍然要尝试在两个子区间中寻找较长的回文子串。
+        left = dfs(i, j - 1)
+        right = dfs(i + 1, j)
+        return left if len(left) >= len(right) else right
+    return dfs(0, n - 1)
+# print(longestPalindromeSubstring("abbbca"))
+
+# 下面返回的是回文子串的长度（上面返回的是回文子串）
+def longestPalindromeSubstr(s: str) -> int:
+    n = len(s)
+    @cache
+    def dfs(i, j):
+        if i > j:
+            return 0
+        if i == j:
+            return 1
+        if s[i] == s[j]:
+            inner_len = dfs(i + 1, j - 1)
+            inner_full_len = j - i - 1
+            if inner_len == inner_full_len:
+                return inner_len + 2
+        # 如果s[i] != s[j]或者内部子串不是完全回文，则取左右子串的最大值
+        return max(dfs(i + 1, j), dfs(i, j - 1))
+    return dfs(0, n - 1)
+# print(longestPalindromeSubstr("abbbca"))
+
+# 百度手撕 输出s的所有连续回文子串
+def continuous_huiwen(s):
+    n = len(s)
+    out = []
+    def expand(l, r):
+    # 以[L，r]为中心向两侧扩展，找到所有回文并按发现顺序加入
+        while l >= 0 and r < n and s[l] == s[r]:
+            out.append(s[l:r + 1])
+            l -= 1
+            r += 1
+    for i in range(n):
+        expand(i, i)    # 奇数长度
+        expand(i, i + 1)  # 偶数长度
+    return out
+
+
 # 1039. 多边形三角剖分的最低得分
 def minScoreTriangulation(values: list[int]) -> int:
     # 时间复杂度：状态个数O(n^2)*每个状态计算的复杂度O(n)=O(n^3)
@@ -615,50 +718,6 @@ def minScoreTriangulation_ditui(values: list[int]) -> int:
                 res=min(res,dfs[i][k]+dfs[k][j]+values[i]*values[j]*values[k])
             dfs[i][j]=res
     return dfs[0][-1]
-
-# 5. 最长回文子串
-# 输入：s = "babad"
-# 输出："bab"
-# 解释："aba" 同样是符合题意的答案。
-def longestPalindrome_dfs( s: str) -> str:
-    lenth=1
-    start=0
-    @cache
-    def dfs(j,i):  # dp[j][i]表示子串s[j:i]是否为回文串
-        # if  j>i:
-        #     return False  # 多余的判断 删去就行
-        if i == j:
-            return True
-        elif i - 1 == j:
-            return s[i] == s[j]
-        else:
-            return dfs(j+1, i-1)  and s[i] == s[j]
-    for i in range(len(s)):
-        for j in range(i): #逆序写也正确：for j in range(i, -1, -1)
-            if dfs(j, i) and i-j+1>lenth:
-                start=j
-                lenth=i-j+1
-    return s[start:start+lenth]
-def longestPalindrome( s: str) -> str:
-    # 从中心往两段扩展
-    n = len(s)
-    length = 1 # 最长回文子串的长度
-    start = 0  # 最长回文子串的起始位置
-    dp = [[False] * n for _ in range(n)]    # dp[j][i]表示子串s[j:i]是否为回文串
-    for i in range(n):
-        # 以i为终点，往回枚举起点j
-        for j in range(i, -1, -1):
-            if i == j:
-                dp[j][i] = True    # 一个字符，一定为回文串
-            elif i == j + 1:
-                dp[j][i] = (s[i] == s[j])  # 两个字符，取决于二者是否相等
-            else:
-                dp[j][i] = (s[i] == s[j]) and dp[j+1][i-1]  # 两个字符以上，首先端点两个字符要相等，其次[j+1, i-1]也要为回文串
-            # [j,i]为回文串且长度更大，更新
-            if dp[j][i] and (i - j + 1) > length:
-                length = i - j + 1
-                start = j
-        return s[start: start + length] # 截取最长回文子串
 
 
 # ----------------------------树形动态规划------------------------------
@@ -715,7 +774,7 @@ def pathSum(root, targetSum: int) -> int:
         cnt+=dfs(node.left, cur_sum+node.val)
         cnt+=dfs(node.right, cur_sum+node.val)
         return cnt
-    def double(node):
+    def double(node): # 每个node为起点
         if node is None:
             return 0
         total= dfs(node,0)
@@ -759,6 +818,8 @@ def longestUnivaluePath(root: [TreeNode]) -> int:
     return ans
 
 # 337. 打家劫舍 III
+# 每栋房子有且只有一个“父“房子与之相连。一番侦察之后，聪明的小偷意识到“这个地方的所有房屋的排列类似于一棵二叉树”。
+# 如果 两个直接相连的房子在同一天晚上被打劫 ，房屋将自动报警。 给定二叉树的 root 。返回 在不触动警报的情况下 ，小偷能够盗取的最高金额 。
 # 选=左不选＋右不选＋当前节点值
 # 不选=max（左选,左不选)+max(右选,右不选)
 def rob4(root: [TreeNode]) -> int:
@@ -781,7 +842,7 @@ def rob4(root: [TreeNode]) -> int:
         return choose,not_choose
     return max(dfs(root))
 
-# 3186. 施咒的最大总伤害
+# 3186. 施咒的最大总伤害 (非hot100）
 # 已知魔法师使用伤害值为 power[i] 的咒语时，他们就 不能 使用伤害为
 # power[i] - 2 ，power[i] - 1 ，power[i] + 1 或者 power[i] + 2 的咒语。
 # 输入：power = [1,1,3,4]
@@ -808,6 +869,7 @@ def maximumTotalDamage( power: list[int]) -> int:
     # return ans
     cnt=Counter(power)
     a=sorted(cnt.keys()) # 已经按升序排序了，所以下面只需要满足 a[j-1]<x-2就可继续往前递归（即a[j-1]不能比x-2还要大
+    print(a) # [1, 2, 3, 4]
     @cache
     def dfs(i): # 定义 dfs(i) 表示从 a[0] 到 a[i] 中选择，可以得到的伤害值之和的最大值。
         if i<0:
@@ -818,8 +880,8 @@ def maximumTotalDamage( power: list[int]) -> int:
             j-=1
         return max(dfs(i-1),dfs(j-1)+x*cnt[x])
     return dfs(len(a)-1)
-power = [1,1,3,2,4]
-print(maximumTotalDamage(power))
+# power = [1,1,3,2,4]
+# print(maximumTotalDamage(power))
 
 # 62. 不同路径 hot
 # 个机器人位于一个 m x n 网格的左上角 （起始点在下图中标记为 “Start” ）。
@@ -847,10 +909,10 @@ def uniquePaths(m: int, n: int) -> int:
 
 # 64. 最小路径和
 # 给定一个包含非负整数的 m x n 网格 grid ，请找出一条从左上角到右下角的路径，使得路径上的数字总和为最小。
-def minPathSum( grid: list[list[int]]) -> int:
+def minPathSum( grid: list[list[int]]):
     m,n=len(grid),len(grid[0])
     @cache
-    def dfs(i: int, j: int) -> int:
+    def dfs(i: int, j: int):
         if i < 0 or j < 0:
             return float('inf')
         if i == 0 and j == 0: # 需不需要这个判断条件可以带入i=0,j=0去看，如果没有的话，下面的val直接返回无穷大了
@@ -894,3 +956,6 @@ def isPowerOfTwo(n: int) -> bool:
     if n % 2 != 0:
         return False
     return isPowerOfTwo(n // 2)
+# 为什么打家劫舍需要单独定义一个dfs函数，而上面这个题不需要？
+# 1. 因为 rob 本身的输入是整个数组，而递归的状态是 “考虑前 i 个房子”。 rob 的函数签名固定：只收一个数组。
+# 2. 这道题递归的状态就是 n 本身，不需要额外的下标或数组。 每次递归直接传入新的 n // 2，输入输出和原函数的签名完全一致。

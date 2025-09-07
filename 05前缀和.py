@@ -31,7 +31,7 @@ def maxSubArray_dp( nums: List[int]) -> int:
 
 # 560. 和为 K 的子数组 ——返回 该数组中和为 k 的子数组的个数
 def subarraySum( nums: List[int], K: int) -> int:
-    s=[0]*(len(nums)+1) # 这里必须写成+1，因为第一次遍历时会有cnt[0]=1
+    s=[0]*(len(nums)+1) # 这里必须写成+1，因为第一次遍历时会执行cnt[sj]+=1，得到cnt[0]=1
     for i,x in enumerate(nums):
         s[i+1] = s[i]+x
     ans=0

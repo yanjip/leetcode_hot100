@@ -40,24 +40,43 @@ def rotate(nums:list[int], k: int) -> None:
             j-=1
     n=len(nums)
     k %= n
-    reverse(0,n-1)
-    reverse(0,k-1)
-    reverse(k,n-1)
+    reverse(0,n-1) # 变成 [7,6,5, 4,3,2,1]
+    reverse(0,k-1) # 变成 [5,6,7, 4,3,2,1]
+    reverse(k,n-1) # 变成 [5,6,7, 1,2,3,4]
+
+# 74. 搜索二维矩阵
+# 每行中的整数从左到右按非严格递增顺序排列。
+# 每行的第一个整数大于前一行的最后一个整数。
+# 给你一个整数 target ，如果 target 在矩阵中，返回 true ；否则，返回 false 。
+def searchMatrix(matrix, target: int) -> bool:
+    m,n=len(matrix), len(matrix[0])
+    i,j=0,n-1
+    while i< m and j >=0:
+        if matrix[i][j]==target:
+            return True
+        if matrix[i][j]<target:
+            i+=1
+        else:
+            j-=1
+    return False
 
 # 240. 搜索二维矩阵 II
-def searchMatrix(matrix: list[list[int]], target: int) -> bool:
+# 搜索 m x n 矩阵 matrix 中的一个目标值 target 。该矩阵具有以下特性：
+# 每行的元素从左到右升序排列。
+# 每列的元素从上到下升序排列。
+def searchMatrixII(matrix: list[list[int]], target: int) -> bool:
     m, n =len(matrix), len(matrix[0])
     x, y =0, n-1
-    while x<=m and y>=0:
+    while x<m and y>=0:
         if matrix[x][y]==target:
             return True
-        elif matrix[x][y]>target:
+        if matrix[x][y]>target:
             y-=1
         else:
             x+=1
     return False
 
-# 21. 合并两个有序链表
+# 21. 合并两个有序链表  (手撕遇到过）
 def mergeTwoLists(list1 , list2 ) :
     cur=dummy=ListNode()
     while list1 and list2:
@@ -72,29 +91,10 @@ def mergeTwoLists(list1 , list2 ) :
     return dummy.next
 
 # 443. 压缩字符串
+# 输入：chars = ["a","a","b","b","c","c","c"]
+# 输出：返回 6 ，输入数组的前 6 个字符应该是：["a","2","b","2","c","3"]
+# chars = ["a"] 输出：返回 1 而不是"a""1"
 def compress(chars) -> int:
-    slow = 0
-    fast = 0
-    writer = 0
-    while fast < len(chars):
-        while fast < len(chars) and chars[fast] == chars[slow]:  # fast不断前进，直到到达不重复的位置
-            fast += 1
-        distance = fast - slow  # 此时二者的差就是重复区间长度
-        chars[writer] = chars[slow]  # 覆写一下字母，比如a, b
-        writer += 1  # 写完后前进一步来准备写下个内容
-        if distance > 1:
-            dist_str = str(distance)
-            # writer
-            for i in range(len(dist_str)):
-                chars[writer] = dist_str[i]  # 开始写长度
-                writer += 1
-
-        slow = fast  # 慢指针初始化为下一个char序列的起点，以准备计算新长度distance
-
-    chars = chars[:writer]  # 截断结果
-    return writer
-
-def compress2(chars) -> int:
     n = len(chars)
     i, j = 0, 0
     while i < n:
@@ -104,12 +104,15 @@ def compress2(chars) -> int:
         chars[j] = chars[start]  # 覆写字母
         j += 1  # 写完后前进一步来准备写下个内容
         if i - start > 1:
-            lst = str(i - start)   # 超过10后，就会出现两个字符
+            lst = str(i - start)  # 超过10后，就会出现两个字符
             for c in lst:
                 chars[j] = c
                 j += 1
     return j
+# print(compress(["a","b","b","c","c","c"]))
+
 # 200. 岛屿数量
+# 给你一个由 '1'（陆地）和 '0'（水）组成的的二维网格，请你计算网格中岛屿的数量。
 def numIslands(grid: list[list[str]]) -> int:
     m,n=len(grid), len(grid[0])
     def dfs(i,j):
@@ -128,41 +131,8 @@ def numIslands(grid: list[list[str]]) -> int:
                 ans+=1
     return ans
 
-# 32. 最长有效括号  栈+贪心
-def longestValidParentheses(s: str) -> int:
-    stack=[]
-    maxL=0
-    n=len(s)
-    tmp=[0]*n
-    for i in range(n):
-        if s[i]=='(':
-            stack.append(i)
-        else:
-            if stack:
-                j=stack.pop()
-                tmp[i], tmp[j]=1, 1
-    curL=0
-    for num in tmp:
-        if num:
-            curL+=1
-            maxL=max(maxL, curL)
-        else: curL=0
-    return maxL
-def longestValidParentheses2(s: str) -> int:
-    ans = 0
-    stack = []
-    for i, c in enumerate(s):
-        if stack and s[stack[-1]] == '(' and c == ')': # 这样写要简洁一点
-            stack.pop()
-            if not stack:
-                ans = max(ans, i + 1)
-            else:
-                ans = max(ans, i - stack[-1])
-        else:
-            stack.append(i)
-    return ans
-
 # 118. 杨辉三角
+# 给定一个非负整数 numRows，生成「杨辉三角」的前 numRows 行
 def generate( numRows: int) :
     ans=[[0]*i for i in range(1,numRows+1)]
     for i in range(numRows):
@@ -175,6 +145,9 @@ def generate( numRows: int) :
 # generate(5)
 
 # 139. 单词拆分
+# 输入: s = "applepenapple", wordDict = ["apple", "pen"]
+# 输出: true
+# 解释: 返回 true 因为 "applepenapple" 可以由 "apple" "pen" "apple" 拼接成。 注意，你可以重复使用字典中的单词。
 # 本题状态个数等于 O(n)，单个状态的计算时间为 O(L^2)（L=wordDict中最长的字符串长度，注意判断子串是否在哈希集合中需要 O(L) 的时间），
 # 所以记忆化搜索的时间复杂度为 O(nL^2)
 def wordBreak(s: str, wordDict) -> bool:
@@ -190,7 +163,7 @@ def wordBreak(s: str, wordDict) -> bool:
                 return True
         return False
     return dfs(len(s))
-
+print(wordBreak(s = "applepenapple", wordDict = ["apple", "pen"]))
 def wordBreak_dp(s: str, wordDict) -> bool:
     max_L = max(map(len, wordDict))
     wordDict = set(wordDict)
@@ -356,29 +329,6 @@ def generateParenthesis2(n: int):
 # n=int(input().strip())
 # print(generateParenthesis(n))
 
-# 5. 最长回文子串
-# 输入：s = "babad"
-# 输出："bab"
-# 解释："aba" 同样是符合题意的答案。
-def longestPalindrome( s: str) -> str:
-    n = len(s)
-    length = 1 # 最长回文子串的长度
-    start = 0  # 最长回文子串的起始位置
-    dp = [[False] * n for _ in range(n)]    # dp[j][i]表示子串s[j:i]是否为回文串
-    for i in range(n):
-        # 以i为终点，往回枚举起点j
-        for j in range(i, -1, -1):
-            if i == j:
-                dp[j][i] = True    # 一个字符，一定为回文串
-            elif i == j + 1:
-                dp[j][i] = (s[i] == s[j])  # 两个字符，取决于二者是否相等
-            else:
-                dp[j][i] = (s[i] == s[j]) and dp[j+1][i-1]  # 两个字符以上，首先端点两个字符要相等，其次[j+1, i-1]也要为回文串
-            # [j,i]为回文串且长度更大，更新
-            if dp[j][i] and (i - j + 1) > length:
-                length = i - j + 1
-                start = j
-        return s[start: start + length] # 截取最长回文子串
 
 # 169. 多数元素
 # 给定一个大小为 n 的数组 nums ，返回其中的多数元素。多数元素是指在数组中出现次数 大于 ⌊ n/2 ⌋ 的元素。

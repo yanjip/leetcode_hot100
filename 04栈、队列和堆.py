@@ -80,7 +80,43 @@ def isValid2( s: str) -> bool:
             return False  # 没有左括号，或者左括号类型不对
     return not st  # 所有左括号必须匹配完毕
 
-
+# 32. 最长有效括号  栈+贪心
+# 输入：s = ")()())"
+# 输出：4
+# 解释：最长有效括号子串是 "()()" ，注意是子串
+def longestValidParentheses(s: str) -> int:
+    stack=[]
+    maxL=0
+    n=len(s)
+    tmp=[0]*n
+    for i in range(n):
+        if s[i]=='(':
+            stack.append(i)
+        else:
+            if stack:
+                j=stack.pop()
+                tmp[i], tmp[j]=1, 1
+    curL=0
+    for num in tmp:
+        if num:
+            curL+=1
+            maxL=max(maxL, curL)
+        else: curL=0
+    return maxL
+def longestValidParentheses2(s: str) -> int:
+    ans = 0
+    stack = []
+    for i, c in enumerate(s):
+        if stack and s[stack[-1]] == '(' and c == ')': # 这样写要简洁一点
+            stack.pop()
+            if not stack:
+                ans = max(ans, i + 1)  #注意如果栈已经为空，没有stack[-1]，表示都匹配成功，共i+1个括号
+            else:
+                ans = max(ans, i - stack[-1]) # 注意到，前面已经pop掉匹配的元素，所以i-stack[-1]不需要再加1
+        else:
+            stack.append(i)
+    return ans
+# print(longestValidParentheses2(")()())"))
 # 42. 接雨水
 def trap(height: list[int]) -> int:
     ans=0
