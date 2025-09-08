@@ -616,6 +616,25 @@ def longestPalindromeSubseq_ditui(s: str) -> int:
 # s=input().strip()
 # print(longestPalindromeSubseq(s))
 
+# 还可以用回溯法求解 （假设要列举所有回文子序列，再找最长） 但确实会超时
+def allPalindromeSubseq(s: str):
+    n = len(s)
+    result = []
+    def backtrack(i, path):
+        # 记录当前路径是否为回文子序列
+        if path and path == path[::-1]:
+            result.append(path)
+        # 递归终止
+        if i == n:
+            return
+        # 选择当前字符
+        backtrack(i + 1, path + s[i])
+        # 不选择当前字符
+        backtrack(i + 1, path)
+    backtrack(0, "")
+    # 从所有回文子序列中找最长
+    # return max(result, key=len) if result else "" 返回最长的串
+    return max(len(i) for i in result) if result else ""
 
 # 5. 最长回文子串
 # 输入：s = "babad"
