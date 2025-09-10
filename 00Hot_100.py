@@ -163,7 +163,7 @@ def wordBreak(s: str, wordDict) -> bool:
                 return True
         return False
     return dfs(len(s))
-print(wordBreak(s = "applepenapple", wordDict = ["apple", "pen"]))
+# print(wordBreak(s = "applepenapple", wordDict = ["apple", "pen"]))
 def wordBreak_dp(s: str, wordDict) -> bool:
     max_L = max(map(len, wordDict))
     wordDict = set(wordDict)
@@ -331,7 +331,7 @@ def generateParenthesis2(n: int):
 
 
 # 169. 多数元素
-# 给定一个大小为 n 的数组 nums ，返回其中的多数元素。多数元素是指在数组中出现次数 大于 ⌊ n/2 ⌋ 的元素。
+# 给定一个大小为 n 的数组 nums ，返回其中的多数元素。多数元素是指在数组中出现次数 大于 ⌊ n/2 ⌋ 的元素。给定的数组总是存在多数元素。
 def majorityElement( nums:list[int]) -> int:
     # 投票法
     votes=0
@@ -349,25 +349,33 @@ def majorityElement( nums:list[int]) -> int:
 # 我们使用整数 0、 1 和 2 分别表示红色、白色和蓝色。
 def sortColors( nums: list[int]) -> None:
     # 维护两个指针，分别指向0和2
-    p0,i,p2=0,0,len(nums)-1
-    while i<=p2:
-        if nums[i]==0:
-            nums[i],nums[p0]=nums[p0],nums[i]
-            p0+=1
-            i+=1
-        elif nums[i]==2:
-            nums[i],nums[p2]=nums[p2],nums[i]
-            p2-=1
-        else:
-            i+=1
+    # p0,i,p2=0,0,len(nums)-1
+    # while i<=p2:
+    #     if nums[i]==0:
+    #         nums[i],nums[p0]=nums[p0],nums[i]
+    #         p0+=1
+    #         i+=1
+    #     elif nums[i]==2:
+    #         nums[i],nums[p2]=nums[p2],nums[i]
+    #         p2-=1
+    #     else:
+    #         i+=1
+    p0 = p1 = 0
+    for i, x in enumerate(nums):
+        nums[i] = 2
+        if x <= 1:
+            nums[p1] = 1
+            p1 += 1
+        if x == 0:
+            nums[p0] = 0
+            p0 += 1
 
-# 31. 下一个排列
+# 31. 下一个排列 （hot100）
 # 输入：nums = [1,7,3,5,4,2,1]
 # 输出：[1,7,4, 1,2,3,5]
 class Solution:
     def nextPermutation(self, nums:list[int]) -> None:
         n = len(nums)
-
         # 第一步：从右向左找到第一个小于右侧相邻数字的数 nums[i] (即i指向3,且i后面的元素一定是单调递减的： [1,7,|3|,5,4,2,1]）
         i = n - 2
         while i >= 0 and nums[i] >= nums[i + 1]:
@@ -395,6 +403,10 @@ class Solution:
 # 输出: [1,2]
 def topKFrequent( nums: list[int], k: int) -> list[int]:
     cnt=Counter(nums) # 第一步：统计每个元素的出现次数
+    # top_k=cnt.most_common(k)
+    # # 提取元素部分，忽略频率
+    # result = [item[0] for item in top_k]
+
     max_cnt=max(cnt.values())
     # 第二步：把出现次数相同的元素，放到同一个桶中
     buckets=[[] for _ in range(max_cnt+1)]
@@ -406,6 +418,7 @@ def topKFrequent( nums: list[int], k: int) -> list[int]:
         ans+=bucket
         if len(ans)==k:
             return ans
+
 # 56. 合并区间
 # 输入：intervals = [[1,3],[2,6],[8,10],[15,18]]
 # 输出：[[1,6],[8,10],[15,18]]
@@ -420,7 +433,59 @@ def merge(intervals) :
             ans.append(p)
     return ans
 
+# 字节二面手撕
+# 外层循环的 M 次与内层循环的最坏 O(L) 次相乘。时间复杂度为 O (M×L)。
+def solve():
+    # 读取输入
+    L, M = map(int, input().split())
+    trees = [1] * (L + 1)   # 下标 0~L，每个位置初始都有树
+    for _ in range(M):
+        a, b = map(int, input().split())
+        # 区间可能 a > b，取 min/max
+        start, end = min(a, b), max(a, b)
+        for i in range(start, end + 1):
+            trees[i] = 0  # 移除树
+    print(sum(trees))
 
+# 先排序 再区间合并
+def solve2():
+    L, M = map(int, input().split())
+    intervals = []
+    for _ in range(M):
+        a, b = map(int, input().split())
+        # 标准化区间（确保start <= end）
+        start, end = min(a, b), max(a, b)
+        # 区间不能超出[0, L]范围（如果输入可能越界）
+        start = max(0, start)
+        end = min(L, end)
+        intervals.append((start, end))
+
+    # 若没有区间，直接返回所有树的数量
+    if not intervals:
+        print(L + 1)
+        return
+
+    # 1. 按区间起点排序
+    intervals.sort()
+
+    # 2. 合并重叠/相邻区间
+    merged = [intervals[0]]
+    for current in intervals[1:]:
+        last = merged[-1]
+        # 若当前区间与上一个区间重叠或相邻（current.start <= last.end）
+        if current[0] <= last[1]:
+            # 合并为更大的区间（取最小start和最大end）
+            merged[-1] = (last[0], max(last[1], current[1]))
+        else:
+            merged.append(current)
+
+    # 3. 计算被移除的树的总数
+    removed = 0
+    for s, e in merged:
+        removed += e - s + 1  # 每个区间的树的数量
+
+    # 剩余树的数量 = 总树数 - 被移除的数量
+    print((L + 1) - removed)
 
 #763. 划分字母区间
 # 输入：s = "ababcbacadefegdehijhklij"
@@ -453,7 +518,7 @@ def canJump( nums: list[int]) -> bool:
     return True
 
 # 45. 跳跃游戏 II
-# 返回到达 nums[n - 1] 的最小跳跃次数。测试用例保证可以到达 nums[n - 1]。
+# 返回到达 nums[n - 1] 的最小跳跃次数。测试用例保证可以到达 nums[n - 1]。每个元素 nums[i] 表示从索引 i 向后跳转的最大长度。
 # 输入: nums = [2,3,1,1,4]
 # 输出: 2 步到达
 # 问：为什么代码只需要遍历到 n−2？
