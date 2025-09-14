@@ -64,3 +64,7 @@ if __name__ == '__main__':
     d_k = d_v = 64  # dimension of K(=Q), V
     n_layers = 6  # number of Encoder of Decoder Layer
     n_heads = 8  # number of heads in Multi-Head Attention
+    MHA=MultiHeadAttention()
+    s=torch.randn(1,10,512)
+    attention_mask=torch.randint(0,1, (1,10,10))
+    print(MHA(s,s,s,attention_mask))

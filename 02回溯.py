@@ -34,7 +34,7 @@ def subsets(nums):  # 从结果的角度进行回溯 for循环执行
     path = [] # 全局变量，所有后面要用copy ()
     n = len(nums)
     def dfs(i):
-        ans.append(path.copy())  #  每执行一次dfs，都会得到一个结果
+        ans.append(path.copy())  #  每执行一次dfs，都会得到一个结果 注意注意，这里没有return
         for j in range(i, n): # 这里可以避免子集重复
             path.append(nums[j])
             dfs(j + 1)
@@ -128,7 +128,7 @@ def subsetsWithDup(nums):
     path = []
     n = len(nums)
     def dfs(i):
-        ans.append(path.copy())
+        ans.append(path.copy())   # 这里没有 return
         for j in range(i, n):
             if j>i and nums[j]==nums[j-1]: # 上一次如果递归了2，这次的值还是2的话就跳过
                 continue
@@ -518,7 +518,7 @@ def permute_k(nums, k):
             path.pop()
     dfs(set(nums))
     return ans
-print(permute_k([1,2,3],2))
+# print(permute_k([1,2,3],2))
 
 def permute2(nums):
     ans=[]

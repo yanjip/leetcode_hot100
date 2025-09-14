@@ -28,18 +28,18 @@ def rob2(nums: list[int]):
         return ans
     return dfs(n-1)
 # 递推写法
-def rob3(self, nums: list[int]) -> int:
+def rob3(nums: list[int]) -> int:
     n=len(nums)
-    # f=[0]*(n+2)
-    # for i, x in enumerate(nums):
-    #     f[i+2]=max(f[i+1],f[i]+x)
-    # return f[n+1]
-    f0,f1=0,0
+    f=[0]*(n+2)
     for i, x in enumerate(nums):
-        newf=max(f1,f0+x)
-        f0=f1
-        f1=newf
-    return newf
+        f[i+2]=max(f[i+1],f[i]+x)
+    return f[n+1]
+    # f0,f1=0,0
+    # for i, x in enumerate(nums):
+    #     newf=max(f1,f0+x)
+    #     f0=f1
+    #     f1=newf
+    # return newf
 # nums=list(map(int,input().strip().split()))
 # print(rob(nums))
 
@@ -110,7 +110,27 @@ def combinationSum4_2(nums: list[int], target: int) -> int:
         f[i] = total
     return f[target]
 
-
+# 39. 组合总和 hot100
+# 给你一个 无重复元素 的整数数组 candidates 和一个目标整数 target ，
+# 找出 candidates 中可以使数字和为目标数 target 的 所有 不同组合(可以 无限制重复被选取 ) ，并以列表形式返回。你可以按 任意顺序 返回这些组合。
+# [2,2,3]和[2,3,2]属于一种组合
+# 输入：candidates = [2,3,6,7], target = 7
+# 输出：[[2,2,3],[7]]
+def combinationSum( candidates, target: int) :
+    ans = []
+    path = []
+    n = len(candidates)
+    def dfs(start, s):
+        if s==target:
+            ans.append(path[:])
+            return
+        if s>target: return
+        for j in range(start, n):
+            path.append(candidates[j])
+            dfs(j,s+candidates[j])
+            path.pop()
+    dfs(0, 0)
+    return ans
 
 #  01 背包问题 (选或不选） 返回能够选择的最大价值
 def zero_one_Bag(capacity, weights: list[int], values: list[int]):
@@ -242,6 +262,7 @@ def canPartition2(nums: list[int]) -> bool:
     s = sum(nums)
     if s % 2 == 1: return False
     n = len(nums)
+    s //= 2
     dfs = [[False] * (s + 1) for _ in range(n + 1)]
     dfs[0][0] = True
     for i, x in enumerate(nums):
@@ -334,7 +355,7 @@ def minDistance_ditui(word1: str, word2: str) -> int:
 # word2=input().strip()
 # print(minDistance_ditui(word1,word2))
 
-# 583. 两个字符串的删除操作
+# 583. 两个字符串的删除操作 非hot100
 # 给定两个单词 word1 和 word2 ，返回使得 word1 和  word2 相同所需的最小步数。
 # 每步 可以删除任意一个字符串中的一个字符。
 def minDistance_583( word1: str, word2: str) -> int:
@@ -342,8 +363,8 @@ def minDistance_583( word1: str, word2: str) -> int:
     n=len(word2)
     @cache
     def dfs(i,j):
-        if i<0 or j<0:
-            return 0
+        if i < 0: return j + 1  # 删除 word2 的剩余 j+1 个字符
+        if j < 0: return i + 1  # 删除 word1 的剩余 i+1 个字符
         if word1[i]==word2[j]:
             return dfs(i-1,j-1)
         return min(dfs(i-1,j)+1, dfs(i,j-1)+1, dfs(i-1,j-1)+2)
@@ -351,6 +372,21 @@ def minDistance_583( word1: str, word2: str) -> int:
 # word1 = "sea"
 # word2 = "eat"
 # print(minDistance_583(word1,word2)) #2  第一步将 "sea" 变为 "ea" ，第二步将 "eat "变为 "ea"
+
+def minDistance_ditui2( word1: str, word2: str) -> int:
+    m=len(word1)
+    n=len(word2)
+    dp=[[0]*(n+1) for _ in range(m+1)]
+    for j, y in enumerate(word2):
+        dp[0][j+1]=j+1
+    for i,x in enumerate(word1):
+        dp[i+1][0]=i+1
+        for j, y in enumerate(word2):
+            if x==y:
+                dp[i+1][j+1]=dp[i][j]
+            else:
+                dp[i+1][j+1]=min(dp[i+1][j]+1, dp[i][j+1]+1, dp[i][j]+2)
+    return dp[-1][-1]
 
 # 300. 最长递增子序列 LIS ——也是线性DP问题
 # 思路1: 选或不选 为了比大小，需要知道上一个选的数字(最长公共子序列那个题适合用这种方法)
@@ -593,7 +629,7 @@ def maxProfitIV_2(k: int, prices: list[int]) -> int:
 def longestPalindromeSubseq(s: str) -> int:
     n=len(s)
     @cache
-    def dfs(i,j):  # dfs(i,j)表示字符串 s[i..j] 的最长回文子序列的长度。
+    def dfs(i,j):  # dfs(i,j)表示字符串 s[i..j] 的最长回文子序列的长度。(包括了j）
         if i>j:
             return 0
         if i==j:
@@ -640,11 +676,12 @@ def allPalindromeSubseq(s: str):
 # 输入：s = "babad"
 # 输出："bab"
 # 解释："aba" 同样是符合题意的答案。
+# 时间复杂度为 O(n²)（n 为输入字符串的长度），空间复杂度为 O(1)
 def longestPalindrome( s: str) -> str:
     n = len(s)
     ans = ''
     def expand(l, r):
-        # 以[L，r]为中心向两侧扩展
+        # 以[l，r]为中心向两侧扩展
         while l >= 0 and r < n and s[l] == s[r]:
             nonlocal ans
             if len(s[l:r + 1]) > len(ans):
@@ -766,6 +803,8 @@ def diameterOfBinaryTree(root: TreeNode) -> int:
 
 # 124. 二叉树中的最大路径和
 # 同一个节点在一条路径序列中 至多出现一次 。该路径 至少包含一个 节点，且不一定经过根节点。
+# 属于DP解法。如果是回溯法，会尝试枚举所有可能的路径（如从每个节点出发，探索所有向下的路径组合），并记录其中的最大值。
+# 但这样会产生大量重复计算（同一子树被多次遍历），且逻辑上是 “穷举所有路径” 而非 “用子问题解推导”。
 def maxPathSum(root: [TreeNode]):
     ans=-float("inf")
     def dfs(node):
@@ -779,7 +818,8 @@ def maxPathSum(root: [TreeNode]):
         return max(max(left_len,right_len,0)+node.val,0)   # 如果以当前节点值作为子树的路径和为负数，则告诉父节点不选该子树
     dfs(root) # 枚举所有节点作为 拐弯的节点
     return ans
-# 437. 路径总和 III
+
+# 437. 路径总和 III （hot100）
 # 给定一个二叉树的根节点 root ，和一个整数 targetSum ，求该二叉树里节点值之和等于 targetSum 的 路径 的数目。
 # 路径 不需要从根节点开始，也不需要在叶子节点结束，但是路径方向必须是向下的（只能从父节点到子节点）。
 def pathSum(root, targetSum: int) -> int:
