@@ -1,6 +1,9 @@
 # time: 2025/2/27 9:59
 # author: YanJP
-from collections import deque
+import heapq
+from collections import deque, Counter
+
+
 # 一、栈（Stack）的典型应用
 # 1. 递归实现：每次递归调用压栈，返回时弹栈（如阶乘、斐波那契数列）。
 # 2. 括号匹配：用栈检查括号是否成对（如 {[()]}）。
@@ -17,8 +20,14 @@ from collections import deque
 # 优先队列：快速获取或删除最高/低优先级元素（如任务调度）。（解决许多与优先级相关的问题）
 # 堆排序：时间复杂度 O(nlogn)，原地排序但不稳定。
 # Top K 问题：用最小堆维护当前最大的 K 个元素（或最大堆维护最小的 K 个）。
+# 堆属性：每个父节点的值都小于或等于其子节点的值（对于最小堆）或大于或等于其子节点的值（对于最大堆）。这里我们使用的是最小堆。
 
-
+# import heapq
+# heap = []
+# heapq.heappush(heap, 3)  # 堆变为 [3]
+# heapq.heappush(heap, 1)  # 堆变为 [1, 3]（自动调整，1 上浮到堆顶）
+# heapq.heappush(heap, 2)  # 堆变为 [1, 3, 2]（2 插入后调整）
+# heapq.heappush(heap, 2) [1, 2, 2, 3]
 
 # 单调栈：要计算的内容涉及到上一个或者下一个更大或者更小的元素
 
@@ -150,9 +159,11 @@ def maxSlidingWindow(nums: list[int], k: int) -> list[int]:
             ans.append(nums[q[0]])
     return ans
 
-# 394. 字符串解码
+# 394. 字符串解码 hot100
 # 输入：s = "3[a]2[bc]"
 # 输出："aaabcbc"
+# 输入：s = "3[a2[c]]"
+# 输出："accaccacc"
 def decodeString( s):
     stack=[]
     res=""
@@ -169,6 +180,29 @@ def decodeString( s):
         else:
             res+=c
     return res
+# print(decodeString("3[a]2[bc]"))
+
+# 443. 压缩字符串 非hot
+# 输入：chars = ["a","a","b","b","c","c","c"]
+# 输出：返回 6 ，输入数组的前 6 个字符应该是：["a","2","b","2","c","3"]
+# chars = ["a"] 输出：返回 1 而不是"a""1"
+def compress(chars) -> int:
+    n = len(chars)
+    i, j = 0, 0
+    while i < n:
+        start = i
+        while i < n and chars[i] == chars[start]:
+            i += 1
+        chars[j] = chars[start]  # 覆写字母
+        j += 1  # 写完后前进一步来准备写下个内容
+        if i - start > 1:
+            lst = str(i - start)  # 超过10后，就会出现两个字符
+            for c in lst:
+                chars[j] = c
+                j += 1
+    return j
+# print(compress(["a","b","b","c","c","c"]))
+
 
 # 找到某个特定下标 i 的左边 小于 heights[i] 的元素的 下标
 def find_left_smaller_index(heights, i):
@@ -226,3 +260,24 @@ def largestRectangleArea(heights) -> int:
 # 最小堆（Min-Heap）：每个节点的值 ≤ 其子节点的值（根节点是最小值）。
 # 最大堆（Max-Heap）：每个节点的值 ≥ 其子节点的值（根节点是最大值）。
 
+# 347. 前 K 个高频元素
+def topKFrequent(self, nums: list[int], k: int) :
+    # cnt=Counter(nums) # 第一步：统计每个元素的出现次数
+    # max_cnt=max(cnt.values())
+    # # 第二步：把出现次数相同的元素，放到同一个桶中
+    # buckets=[[] for _ in range(max_cnt+1)]
+    # for x, c in cnt.items():
+    #     buckets[c].append(x) # 关键是这里，例如出现5次的数字有[3,4]
+    # # 第三步：倒序遍历 buckets，把出现次数前 k 大的元素加入答案
+    # ans=[]
+    # for bucket in reversed(buckets):
+    #     ans+=bucket
+    #     if len(ans)==k:
+    #         return ans
+    cnt = Counter(nums)
+    heap = []
+    for key, val in cnt.items():
+        heapq.heappush(heap, (val, key))
+        if len(heap) > k:
+            heapq.heappop(heap)
+    return [key for val, key in heap]

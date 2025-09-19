@@ -44,7 +44,7 @@ def rotate(nums:list[int], k: int) -> None:
     reverse(0,k-1) # 变成 [5,6,7, 4,3,2,1]
     reverse(k,n-1) # 变成 [5,6,7, 1,2,3,4]
 
-# 74. 搜索二维矩阵
+# 74. 搜索二维矩阵 （二分查找）
 # 每行中的整数从左到右按非严格递增顺序排列。
 # 每行的第一个整数大于前一行的最后一个整数。
 # 给你一个整数 target ，如果 target 在矩阵中，返回 true ；否则，返回 false 。
@@ -90,7 +90,7 @@ def mergeTwoLists(list1 , list2 ) :
     cur.next=list1 or list2
     return dummy.next
 
-# 443. 压缩字符串
+# 443. 压缩字符串 非hot
 # 输入：chars = ["a","a","b","b","c","c","c"]
 # 输出：返回 6 ，输入数组的前 6 个字符应该是：["a","2","b","2","c","3"]
 # chars = ["a"] 输出：返回 1 而不是"a""1"
@@ -123,7 +123,7 @@ def numIslands(grid: list[list[str]]) -> int:
         dfs(i-1,j)
         dfs(i,j+1)
         dfs(i,j-1)
-    ans=1
+    ans=0
     for i,x in enumerate(grid):
         for j, y in enumerate(x):
             if y=='1':

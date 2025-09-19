@@ -125,25 +125,6 @@ def inorderTraversal(root) :
     dfs(root)
     return ans
 
-# 104. 二叉树的最大深度
-def maxDepth(root) -> int:
-    if root is None:
-        return 0
-    left=maxDepth(root.left)
-    right=maxDepth(root.right)
-    return max(left,right)+1
-
-# 226. 翻转二叉树
-def invertTree(root) :
-    if root is None:
-        return None
-    left = invertTree(root.left)  # 翻转左子树
-    right = invertTree(root.right)  # 翻转右子树
-    root.left = right  # 交换左右儿子
-    root.right = left
-    return root
-
-
 # 102. 二叉树的层序遍历
 def levelOrder(root):
     if root is None:
@@ -160,6 +141,7 @@ def levelOrder(root):
         ans.append(vals)
         cur=nxt
     return ans
+
 from collections import deque
 def levelOrder2(root):
     if root is None:
@@ -175,6 +157,18 @@ def levelOrder2(root):
             vals.append(n.val)
         ans.append(vals)
     return ans
+
+# 226. 翻转二叉树
+def invertTree(root) :
+    if root is None:
+        return None
+    left = invertTree(root.left)  # 翻转左子树
+    right = invertTree(root.right)  # 翻转右子树
+    root.left = right  # 交换左右儿子
+    root.right = left
+    return root
+
+
 
 # 513. 找树左下角的值
 # 还是层序遍历，但每次先将右儿子入队，这样答案就是最后一次节点

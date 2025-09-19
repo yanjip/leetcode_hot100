@@ -1,6 +1,6 @@
 # time: 2025/2/28 20:36
 # author: YanJP
-from collections import defaultdict
+from collections import defaultdict, Counter
 from typing import List
 
 
@@ -41,6 +41,22 @@ def subarraySum( nums: List[int], K: int) -> int:
         cnt[sj]+=1
     return ans
 # print(subarraySum([1,2,3],2))
+
+# 对比下面这个题
+# 3. 无重复字符的最长子串
+# 给定一个字符串 s ，请你找出其中不含有重复字符的 最长 子串 的长度。
+def lengthOfLongestSubstring( s):
+    left=0
+    ans=0
+    # 记录当前窗口中每个字符的出现次数。
+    count=Counter() # 也可以写成 defaultdict(int)
+    for right,x in enumerate(s):
+        count[x]+=1
+        while count[x]>1: # 出现重复了，left对应的cnt可以-1，然后移动left
+            count[s[left]]-=1 # 有可能s[left]等于x，此时count[x]==2，所以这行不能写成=0
+            left+=1
+        ans=max(ans,right-left+1)
+    return ans
 
 # 一次遍历解法：一边计算前缀和，一边遍历前缀和。
 def subarraySum_once(nums: List[int], K: int) -> int:

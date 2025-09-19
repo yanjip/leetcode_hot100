@@ -33,6 +33,10 @@ def twoSum(numbers, target: int) :
     return [left + 1, right + 1]
 
 # 15. 三数之和
+# 给你一个整数数组 nums ，判断是否存在三元组 [nums[i], nums[j], nums[k]] 满足 i != j、i != k 且 j != k ，
+# 同时还满足 nums[i] + nums[j] + nums[k] == 0 。请你返回所有和为 0 且不重复的三元组。
+# 输入：nums = [-1,0,1,2,-1,-4]
+# 输出：[[-1,-1,2],[-1,0,1]]
 def threeSum(nums):
     nums.sort()
     ans=[]
@@ -65,89 +69,153 @@ def threeSum(nums):
 
 
 
-# ------------------------------滑动窗口类型题------------------------------------------------------
-# 209. 长度最小的子数组
-# 给定一个含有 n 个正整数的数组和一个正整数 target。找出该数组中满足其总和大于等于 target 的长度最小的 子数组，并返回其长度
-# 时间复杂度：O(n)，因为left和right都是至多+=1执行n次
-def minSubArrayLen(target: int, nums: list[int]) -> int:
-    ans=len(nums)+1
-    left=0
-    s=0
-    for right, x in enumerate(nums):
-        s+=x
-        while s>=target: # 滑动窗口的数值是满足条件的；  left往后一位或者多位都可能满足条件，所以更新答案在while内
-            ans=min(ans, right-left+1)
-            s-=nums[left]
-            left+=1 # 移动left前要保证总和大于等于 target
-    return ans if ans<=len(nums) else 0
 
-def minSubArrayLen2(target: int, nums: list[int]) -> int:
-    ans=len(nums)+1
-    left=0
-    s=0
-    for right, x in enumerate(nums):
-        s+=x
-        # 注意，这里不需要判断left<=right, 因为如果left<=right, 那么s-nums[left]一定是≤0的，因此不会进入while循环
-        while s-nums[left]>=target: # 因为left越往后，越容易满足题目条件
-            s-=nums[left]
-            left+=1 # 移动left前要保证总和大于等于 target
-        if s>=target:
-            ans=min(ans, right-left+1)
-    return ans if ans<=len(nums) else 0
+# 189. 轮转数组 给定一个整数数组 nums，将数组中的元素向右轮转 k 个位置，其中 k 是非负数。
+# 输入: nums = [1,2,3,4,5,6,7], k = 3
+# 输出: [5,6,7,1,2,3,4]
+# 解释:# 向右轮转 1 步: [7,1,2,3,4,5,6]
+# 双指针 数组
+def rotate(nums:list[int], k: int) -> None:
+    def reverse(i,j):
+        while i<j:
+            nums[i], nums[j]=nums[j], nums[i]
+            i+=1
+            j-=1
+    n=len(nums)
+    k %= n
+    reverse(0,n-1) # 变成 [7,6,5, 4,3,2,1]
+    reverse(0,k-1) # 变成 [5,6,7, 4,3,2,1]
+    reverse(k,n-1) # 变成 [5,6,7, 1,2,3,4]
 
-# 713. 乘积小于 K 的子数组
-# 给你一个整数数组 nums 和一个整数 k ，请你返回子数组内所有元素的乘积严格小于 k 的连续子数组的数目。
-# 和560不同的是，本题由于算乘积，且数组均大于等于1，因此，前缀乘积是单调增的，只能逐步往后扩展找到满足的子数组
-def numSubarrayProductLessThanK( nums: list[int], k: int) -> int:
-    if k<=1: return 0
-    prob=1
-    ans=0
-    left=0
-    for right, x in enumerate(nums):
-        prob*=x
-        while prob>=k: # 要保证滑动窗口内的乘积小于k，不满足就移动left； left往后一位不一定能满足条件，所以需要while循环
-            prob/=nums[left]
-            left+=1
-        ans+=(right-left+1) # 这里注意，[l,r] [l+1,r] ...[r,r]都是满足条件的子数组
+# 74. 搜索二维矩阵
+# 每行中的整数从左到右按非严格递增顺序排列。
+# 每行的第一个整数大于前一行的最后一个整数。
+# 给你一个整数 target ，如果 target 在矩阵中，返回 true ；否则，返回 false 。
+def searchMatrix(matrix, target: int) -> bool:
+    m,n=len(matrix), len(matrix[0])
+    i,j=0,n-1
+    while i< m and j >=0:
+        if matrix[i][j]==target:
+            return True
+        if matrix[i][j]<target:
+            i+=1
+        else:
+            j-=1
+    return False
+
+# 240. 搜索二维矩阵 II
+# 搜索 m x n 矩阵 matrix 中的一个目标值 target 。该矩阵具有以下特性：
+# 每行的元素从左到右升序排列。
+# 每列的元素从上到下升序排列。
+def searchMatrixII(matrix: list[list[int]], target: int) -> bool:
+    m, n =len(matrix), len(matrix[0])
+    x, y =0, n-1
+    while x<m and y>=0:
+        if matrix[x][y]==target:
+            return True
+        if matrix[x][y]>target:
+            y-=1
+        else:
+            x+=1
+    return False
+
+# 118. 杨辉三角
+# 给定一个非负整数 numRows，生成「杨辉三角」的前 numRows 行
+def generate( numRows: int) :
+    ans=[[0]*i for i in range(1,numRows+1)]
+    for i in range(numRows):
+        ans[i][0]=ans[i][-1]=1
+    for i in range(2,numRows):
+        for j in range(1,i):
+            ans[i][j]=ans[i-1][j-1]+ans[i-1][j]
+    print(ans)
+    return ans
+# generate(5)
+
+# 56. 合并区间
+# 输入：intervals = [[1,3],[2,6],[8,10],[15,18]]
+# 输出：[[1,6],[8,10],[15,18]]
+# 解释：区间 [1,3] 和 [2,6] 重叠, 将它们合并为 [1,6].
+def merge(intervals) :
+    intervals.sort(key=lambda p:p[0])
+    ans=[]
+    for p in intervals:
+        if ans and p[0]<=ans[-1][1]:
+            ans[-1][1]=max(ans[-1][1], p[1])
+        else:
+            ans.append(p)
     return ans
 
-# 560. 和为 K 的子数组（前缀和、哈希表）  注：子数组和子串是连续的，子序列不连续
-# 数组可能是负数
-def subarraySum( nums: list[int], k: int) -> int:
-    #  如     1 1 0 1 1，k=2
-    # 前缀和:0 1 2 2 3 4, 第二个2减0=2,得到一个子数组; 4减第一个2=2，得到一个子数组; 4-第二个2=2，得到一个子数组;...
-    s=[0] * (len(nums)+1)
-    for i, x in enumerate(nums):
-        s[i + 1] = s[i] + x # 构建前缀和数组
-    ans = 0
-    cnt = defaultdict(int)  # 在一些数中找一个数，使用哈希表
-    for sj in s:
-        ans += cnt[sj - k] # 找前缀和为sj-k的个数
-        cnt[sj] += 1
-    return ans
+# 字节二面手撕
+# 外层循环的 M 次与内层循环的最坏 O(L) 次相乘。时间复杂度为 O (M×L)。
+def solve():
+    # 读取输入
+    L, M = map(int, input().split())
+    trees = [1] * (L + 1)   # 下标 0~L，每个位置初始都有树
+    for _ in range(M):
+        a, b = map(int, input().split())
+        # 区间可能 a > b，取 min/max
+        start, end = min(a, b), max(a, b)
+        for i in range(start, end + 1):
+            trees[i] = 0  # 移除树
+    print(sum(trees))
 
-# 一次遍历解法：一边计算前缀和，一边遍历前缀和。
-def subarraySum_once(nums: list[int], K: int) -> int:
-    ans = s = 0
-    cnt = defaultdict(int)
-    cnt[0] = 1  # 对应上面sj=1时，cnt[sj]+=1
-    for x in nums:
-        s += x             #1. 计算前缀和
-        ans += cnt[s - K]  #2. 更新答案
-        cnt[s] += 1        #3. 更新哈希表中对应前缀和的个数
-    return ans
 
-# 3. 无重复字符的最长子串
-# 给定一个字符串 s ，请你找出其中不含有重复字符的 最长 子串 的长度。
-def lengthOfLongestSubstring( s):
-    left=0
-    ans=0
-    # 记录当前窗口中每个字符的出现次数。
-    count=Counter() # 也可以写成 defaultdict(int)
-    for right,x in enumerate(s):
-        count[x]+=1
-        while count[x]>1: # 出现重复了，left对应的cnt可以-1，然后移动left
-            count[s[left]]-=1 # 有可能s[left]等于x，此时count[x]==2，所以这行不能写成=0
-            left+=1
-        ans=max(ans,right-left+1)
+# 238. 除自身以外数组的乘积
+# 给你一个整数数组 nums，返回 数组 answer ，其中 answer[i] 等于 nums 中除 nums[i] 之外其余各元素的乘积 。
+# 请 不要使用除法，且在 O(n) 时间复杂度内完成此题。
+# 输入: nums = [1,2,3,4]
+# 输出: [24,12,8,6]
+# 前后缀分解 如果知道了 i 左边所有数的乘积，以及 i 右边所有数的乘积，就可以算出 answer[i]。
+# 定义 pre[i] 表示从 nums[0] 到 nums[i−1] 的乘积。
+# 定义 suf[i] 表示从 nums[i+1] 到 nums[n−1] 的乘积。
+def productExceptSelf( nums: List[int]) -> List[int]:
+    n = len(nums)
+    pre = [1] * n
+    suf = [1] * n
+
+    for i in range(1, n):
+        pre[i] = pre[i - 1] * nums[i - 1] # [1, 1, 2, 6]
+
+    for i in range(n - 2, -1, -1):
+        suf[i] = suf[i + 1] * nums[i + 1] # [24, 12, 4, 1]
+
+    return [p * s for p, s in zip(pre, suf)]
+# productExceptSelf([2,3,4])
+
+# 矩阵置零
+# 给定一个 m x n 的矩阵，如果一个元素为 0 ，则将其所在行和列的所有元素都设为 0 。请使用 原地 算法。
+def setZeroes(matrix: List[List[int]]) -> None:
+    m=len(matrix)
+    n=len(matrix[0])
+    def design(x,y):
+        for i in range(n):
+            matrix[x][i]=0
+        for i in range(m):
+            matrix[i][y]=0
+    mark=[]
+    for i in range(m):
+        for j in range(n):
+            if matrix[i][j]==0:
+                mark.append([i,j])
+    for x in mark:
+        design(x[0],x[1])
+
+# 54. 螺旋矩阵
+# 给你一个 m 行 n 列的矩阵 matrix ，请按照 顺时针螺旋顺序 ，返回矩阵中的所有元素。
+def spiralOrder(matrix: List[List[int]]) -> List[int]:
+    DIRS = (0, 1), (1, 0), (0, -1), (-1, 0)  # 右下左上
+    m,n=len(matrix),len(matrix[0])
+    ans=[]
+    i=j=di=0
+    for _ in range(m*n):
+        ans.append(matrix[i][j])
+        matrix[i][j]=None
+        x = i + DIRS[di][0]
+        y = j + DIRS[di][1]  # 下一步的位置
+        if x<0 or x>=m or y<0 or y>=n or matrix[x][y] is None:
+            di=(di+1)%4
+        i+=DIRS[di][0]
+        j+=DIRS[di][1]
     return ans
+print(spiralOrder(matrix = [[1,2,3,4],[5,6,7,8],[9,10,11,12]]))

@@ -4,6 +4,8 @@ from collections import Counter
 
 
 # 11. 盛最多水的容器
+# 给定一个长度为 n 的整数数组 height 。有 n 条垂线，第 i 条线的两个端点是 (i, 0) 和 (i, height[i]) 。
+# 找出其中的两条线，使得它们与 x 轴共同构成的容器可以容纳最多的水。
 def maxArea(height: list[int]) -> int:
     i, j, res = 0, len(height) - 1, 0
     while i < j:
@@ -53,7 +55,13 @@ def trap2(height: list[int]) -> int:
     return ans
 
 
-# 2824. 统计和小于目标的下标对数目
+# 2824. 统计和小于目标的下标对数目 非hot100
+# 输入：nums = [-1,1,2,3,1], target = 2
+# 输出：3
+# 解释：总共有 3 个下标对满足题目描述：
+# - (0, 1) ，0 < 1 且 nums[0] + nums[1] = 0 < target
+# - (0, 2) ，0 < 2 且 nums[0] + nums[2] = 1 < target
+# - (0, 4) ，0 < 4 且 nums[0] + nums[4] = 0 < target
 def countPairs(nums: list[int], target: int) -> int:
     nums.sort()
     ans = 0
@@ -66,8 +74,8 @@ def countPairs(nums: list[int], target: int) -> int:
         elif nums[left] + nums[right] >= target:
             right -= 1
     return ans
-nums=[-6,2,5,-2,-7,-1,3]
-print(countPairs(nums,-2))
+# nums=[-6,2,5,-2,-7,-1,3]
+# print(countPairs(nums,-2))
 
 # 3. 无重复字符的最长子串 (腾讯手撕题）
 def lengthOfLongestSubstring( s):

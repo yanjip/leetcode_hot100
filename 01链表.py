@@ -181,6 +181,8 @@ def mergeTwoLists(list1 , list2 ) :
 
 # 876. 链表的中间结点
 # 找出并返回链表的中间结点。如果有两个中间结点，则返回第二个中间结点。
+# 输入：head = [1,2,3,4,5,6]
+# 输出：[4,5,6]
 def middleNode(head):
     fast=head
     slow=head
@@ -219,3 +221,24 @@ def addTwoNumbers2( l1: Optional[ListNode], l2: Optional[ListNode], carry=0) -> 
         s += l2.val
         l2 = l2.next
     return ListNode(s % 10, next=addTwoNumbers2(l1, l2, s // 10))
+
+# 160. 相交链表
+# 给你两个单链表的头节点 headA 和 headB ，请你找出并返回两个单链表相交的起始节点。如果两个链表不存在相交节点，返回 null 。
+def getIntersectionNode(headA, headB):
+    p,q = headA, headB
+    while p is not q:
+        p=p.next if p else headB
+        q=q.next if q else headA
+    return p
+
+# 234. 回文链表
+# 给你一个单链表的头节点 head ，请你判断该链表是否为回文链表。如果是，返回 true ；否则，返回 false 。
+def isPalindrome(head: Optional[ListNode]) -> bool:
+    mid = middleNode(head)
+    head2 = reverseList(mid)
+    while head2:
+        if head.val != head2.val:  # 不是回文链表
+            return False
+        head = head.next
+        head2 = head2.next
+    return True

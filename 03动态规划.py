@@ -471,6 +471,21 @@ def find_length_of_lcis_dfs2(nums):
     dfs(0, 1)  # 从第0个元素开始，初始current_length=1
     return max_length
 
+# 560. 和为 K 的子数组（前缀和、哈希表）  注：子数组和子串是连续的，子序列不连续
+# 数组可能是负数
+def subarraySum( nums: list[int], k: int) -> int:
+    #  如     1 1 0 1 1，k=2
+    # 前缀和:0 1 2 2 3 4, 第二个2减0=2,得到一个子数组; 4减第一个2=2，得到一个子数组; 4-第二个2=2，得到一个子数组;...
+    s=[0] * (len(nums)+1)
+    for i, x in enumerate(nums):
+        s[i + 1] = s[i] + x # 构建前缀和数组
+    ans = 0
+    cnt = defaultdict(int)  # 在一些数中找一个数，使用哈希表
+    for sj in s:
+        ans += cnt[sj - k] # 找前缀和为sj-k的个数
+        cnt[sj] += 1
+    return ans
+
 # 53. 最大子数组和 (腾讯面试题）三种解法
 # 给你一个整数数组 nums ，请你找出一个具有最大和的连续子数组（子数组最少包含一个元素），返回其最大和。
 # 输入：nums = [-2,1,-3,4,-1,2,1,-5,4]
@@ -1018,3 +1033,48 @@ def isPowerOfTwo(n: int) -> bool:
 # 为什么打家劫舍需要单独定义一个dfs函数，而上面这个题不需要？
 # 1. 因为 rob 本身的输入是整个数组，而递归的状态是 “考虑前 i 个房子”。 rob 的函数签名固定：只收一个数组。
 # 2. 这道题递归的状态就是 n 本身，不需要额外的下标或数组。 每次递归直接传入新的 n // 2，输入输出和原函数的签名完全一致。
+
+# 139. 单词拆分
+# 输入: s = "applepenapple", wordDict = ["apple", "pen"]
+# 输出: true
+# 解释: 返回 true 因为 "applepenapple" 可以由 "apple" "pen" "apple" 拼接成。 注意，你可以重复使用字典中的单词。
+# 本题状态个数等于 O(n)，单个状态的计算时间为 O(L^2)（L=wordDict中最长的字符串长度，注意判断子串是否在哈希集合中需要 O(L) 的时间），
+# 所以记忆化搜索的时间复杂度为 O(nL^2)
+def wordBreak(s: str, wordDict) -> bool:
+    # 记忆化递归函数
+    n = len(s)
+    @cache
+    def dfs(i): # dfs(i): 判断字符串 s 从索引 i 开始到末尾的子串是否能被 wordDict 中的单词完全拆分。
+        if i == n:
+            return True
+        for j in range(i + 1, n + 1):
+            if s[i:j] in wordDict and dfs(j):
+                return True
+        return False
+    return dfs(0)
+def wordBreak2(s: str, wordDict) -> bool:
+    n = len(s)
+    wordDict = set(wordDict)  # 转换为集合提高查询效率
+    @cache
+    def dfs(i):
+        if i == 0:
+            return True  # 空字符串可以被拆分（base case）
+        for j in range(i - 1, -1, -1):  # 从 i-1 倒序遍历到 0
+            if s[j:i] in wordDict and dfs(j):
+                return True
+        return False
+    return dfs(n)  # 判断整个字符串 s[0:n] 是否能被拆分
+# print(wordBreak(s = "applepenapple", wordDict = ["apple", "pen"]))
+
+def wordBreak_ditui(s: str, wordDict: list[str]) -> bool:
+    n = len(s)
+    wordDict = set(wordDict)
+    m = len(wordDict)
+    dp = [False] * (n+1)
+    dp[0] = True
+    for i in range(1, n+1):
+        for j in range(i):
+            if dp[j] and s[j:i] in wordDict:
+                dp[i] = True
+                break
+    return dp[n]

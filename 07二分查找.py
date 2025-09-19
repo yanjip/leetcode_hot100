@@ -15,7 +15,7 @@ def low_bound(nums, target): # 找到第一个大于等于target的索引
 
 # 上述为≥tgt，其他形式可以转换成该形式： 例子[5, 7, 7, 8, 8, 10], tg=8 （递增序列）
 #   求>tg 的第一个数:   ≥(tg+1)  等价于先找到第一个≥(8+1)，即index=5的10，即是所求的数。
-#   求<tg的最后一个数:  (≥tg)-1  等价于先找到index=3(从0开始算的)的tg 8，然后再取它右边的数。即找到index=2的数7，即是所求的数。
+#   求<tg的最后一个数:  (≥tg)-1  等价于先找到index=3(从0开始算的)的tg 8，然后再取它左边的数。即找到index=2的数7，即是所求的数。
 #   求≤tg的最后一个数:  (>tg)-1  等价于先找到第一个>tg，即index=5的10，再取它左边的数。即找到index=4的数8，即是所求的数。
 
 # 34. 在排序数组中查找元素的第一个和最后一个位置
@@ -69,20 +69,20 @@ def count_target(nums, target):
 # print(f"数组 {nums} 中等于 {target} 的个数是: {result}")  # 输出: 3
 
 # 35. 搜索插入位置
+# nums 为 无重复元素 的 升序 排列数组
 def searchInsert( nums: list[int], target: int) -> int:
     def low_bound(nums, target): # 找到第一个大于等于target的索引
         left=0
         right=len(nums)-1
-        while left<=right:
-            mid=(left+right)//2
-            if nums[left]<target:
-                left=mid+1
+        while left <= right:
+            mid = (left + right) // 2
+            if nums[mid] < target:
+                left = mid + 1
             else:
-                right=mid-1
+                right = mid - 1
         return left
-
-    return low_bound(nums,target-1)+1
-print(searchInsert([1,3,5,6],2))
+    return low_bound(nums,target)
+# print(searchInsert([1,3,5,6],2))
 
 # 153. 寻找旋转排序数组中的最小值（设计一个时间复杂度为 O(log n) 的算法
 # 输入：nums = [3,4,5,1,2]
@@ -90,15 +90,16 @@ print(searchInsert([1,3,5,6],2))
 # 解释：原数组为 [1,2,3,4,5] ，旋转 3 次得到输入数组。
 def findMin(nums: list[int]) -> int:
     # 只需要比较 x 和 nums[n−1] 的大小关系，就间接地知道了 x 和数组最小值的位置关系
+    # 就改两个地方n-2和<nums[-1]
     left = 0
     n = len(nums)
     right = n - 2
-    while left <= right:
-        mid = (left + right) // 2
-        if nums[mid] < nums[-1]:
-            right = mid - 1
-        else:
-            left = mid + 1
+    while left<=right:
+        mid=(left+right)//2
+        if nums[mid]>nums[-1]: #[3,4,5,1,2]  x 在第一段。最小值在第二段。所以 x 一定在最小值的左边。
+            left=mid+1
+        else: # [1,2,3,4,5] x 要么是最小值，要么在最小值右边。
+            right=mid-1
     return nums[left]
 
 # 百度二面题 求float x的立方根
@@ -125,5 +126,5 @@ def main(x):
     # 最终结果在low和high之间
     result = (low + high) / 2 * sign
     return round(result, 3)
-# ans = main(64.1)
-# print(ans)
+ans = main(0.0082)
+print(ans)
