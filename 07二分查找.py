@@ -1,7 +1,8 @@
 # time: 2025/3/5 9:58
 # author: YanJP
 
-# 左右均为闭区间写法
+# -----------------07二分查找.py-----------------------------------
+# 二分查找       左右均为闭区间写法
 def low_bound(nums, target): # 找到第一个大于等于target的索引
     left=0
     right=len(nums)-1
@@ -12,11 +13,13 @@ def low_bound(nums, target): # 找到第一个大于等于target的索引
         else:
             right=mid-1
     return left  # 第一个大于等于target的索引 （循环不变量，循环到最后，left-1始终是小于target的，right+1始终是大于等于target的）
+# print(low_bound([1,2,3,4,5,6,7,8,9],10))  如果数组不存在target，会返回数组的长度
 
 # 上述为≥tgt，其他形式可以转换成该形式： 例子[5, 7, 7, 8, 8, 10], tg=8 （递增序列）
 #   求>tg 的第一个数:   ≥(tg+1)  等价于先找到第一个≥(8+1)，即index=5的10，即是所求的数。
 #   求<tg的最后一个数:  (≥tg)-1  等价于先找到index=3(从0开始算的)的tg 8，然后再取它左边的数。即找到index=2的数7，即是所求的数。
 #   求≤tg的最后一个数:  (>tg)-1  等价于先找到第一个>tg，即index=5的10，再取它左边的数。即找到index=4的数8，即是所求的数。
+#   求等于tg的最后一个位置： (>tg)-1 ==> ≥(tg+1)-1 等价于先找到第一个>tg，即index=5的10，再取它左边的数。即找到index=4的数8，即是所求的数。（和上面一个意思）
 
 # 34. 在排序数组中查找元素的第一个和最后一个位置
 # 输入：nums = [5,7,7,8,8,10], target = 8
@@ -96,7 +99,7 @@ def findMin(nums: list[int]) -> int:
     right = n - 2
     while left<=right:
         mid=(left+right)//2
-        if nums[mid]>nums[-1]: #[3,4,5,1,2]  x 在第一段。最小值在第二段。所以 x 一定在最小值的左边。
+        if nums[mid]>nums[-1]: #[3,4,5,1,2]  x=nums[mid]，说明 x 在第一段。最小值在第二段。所以 x 一定在最小值的左边。
             left=mid+1
         else: # [1,2,3,4,5] x 要么是最小值，要么在最小值右边。
             right=mid-1

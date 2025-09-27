@@ -1,5 +1,6 @@
 # time: 2025/1/14 10:06
 # author: YanJP
+# -----------------01链表.py-------------------------------
 from typing import Optional
 
 class ListNode():
@@ -35,14 +36,14 @@ def reverseBetween(head, left, right):
         cur.next = pre
         pre = cur
         cur = nxt
-    p0.next.next = cur  # 注意，p0的next指向的是反转后链表的最后一个节点，此时这个节点需要指向right后面的节点，即为cur. 也就是说2要指向5
+    p0.next.next = cur  # 注意，p0的next指向的是反转后链表的最后一个节点（1还是指向2的），此时2节点需要指向right后面的节点，即为cur. 也就是说2要指向5
     p0.next = pre # 最后，pre指向的是right对应的节点，再将前半段与翻转后的头结点，即pre 连接起来. 1要指向4
     return dummy.next
 
 # 24. 两两交换链表中的节点
 def swapPairs( head ):
     node0=dummy=ListNode(next=head)
-    node1=head
+    node1=head  # node1是指马上要交换的第一个节点
     while node1 and node1.next:
         node2=node1.next
         node3=node2.next
@@ -158,7 +159,7 @@ def deleteDuplicatesII(head):
     while cur.next and cur.next.next:
         val = cur.next.val
         if val == cur.next.next.val:
-            while cur.next and cur.next.val == val:
+            while cur.next and cur.next.val == val: # 第一次执行到这里肯定是满足的，然后依次检测，直到cur.next.val != val 为止
                 cur.next = cur.next.next
         else:
             cur = cur.next
@@ -186,10 +187,22 @@ def mergeTwoLists(list1 , list2 ) :
 def middleNode(head):
     fast=head
     slow=head
-    while fast and fast.next:
+    while fast and fast.next: # 长度为奇数时，fast最终会指向最后一个节点；长度为偶数时，fast最终会指向最后一个节点的next，也就是None；
         fast=fast.next.next
         slow=slow.next
     return slow
+
+# 234. 回文链表
+# 给你一个单链表的头节点 head ，请你判断该链表是否为回文链表。如果是，返回 true ；否则，返回 false 。
+def isPalindrome(head: Optional[ListNode]) -> bool:
+    mid = middleNode(head)
+    head2 = reverseList(mid)
+    while head2:
+        if head.val != head2.val:  # 不是回文链表
+            return False
+        head = head.next
+        head2 = head2.next
+    return True
 
 # 2. 两数相加
 # 输入：l1 = [2,4,3], l2 = [5,6,4]
@@ -224,6 +237,7 @@ def addTwoNumbers2( l1: Optional[ListNode], l2: Optional[ListNode], carry=0) -> 
 
 # 160. 相交链表
 # 给你两个单链表的头节点 headA 和 headB ，请你找出并返回两个单链表相交的起始节点。如果两个链表不存在相交节点，返回 null 。
+# 如果没有相交节点，可以认为两个节点在最后的none节点相交
 def getIntersectionNode(headA, headB):
     p,q = headA, headB
     while p is not q:
@@ -231,14 +245,4 @@ def getIntersectionNode(headA, headB):
         q=q.next if q else headA
     return p
 
-# 234. 回文链表
-# 给你一个单链表的头节点 head ，请你判断该链表是否为回文链表。如果是，返回 true ；否则，返回 false 。
-def isPalindrome(head: Optional[ListNode]) -> bool:
-    mid = middleNode(head)
-    head2 = reverseList(mid)
-    while head2:
-        if head.val != head2.val:  # 不是回文链表
-            return False
-        head = head.next
-        head2 = head2.next
-    return True
+

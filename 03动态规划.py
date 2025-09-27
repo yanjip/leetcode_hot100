@@ -6,6 +6,7 @@ from functools import cache
 import time
 from math import isqrt
 
+# -------------------------03动态规划.py------------------------------------
 
 # 198. 打家劫舍
 def rob(nums: list[int]):  # 超时，时间复杂度是指数级别
@@ -113,7 +114,7 @@ def combinationSum4_2(nums: list[int], target: int) -> int:
 # 39. 组合总和 hot100
 # 给你一个 无重复元素 的整数数组 candidates 和一个目标整数 target ，
 # 找出 candidates 中可以使数字和为目标数 target 的 所有 不同组合(可以 无限制重复被选取 ) ，并以列表形式返回。你可以按 任意顺序 返回这些组合。
-# [2,2,3]和[2,3,2]属于一种组合
+# [2,2,3]和[2,3,2]属于一种组合  (和上题不一样）
 # 输入：candidates = [2,3,6,7], target = 7
 # 输出：[[2,2,3],[7]]
 def combinationSum( candidates, target: int) :
@@ -154,7 +155,7 @@ def findTargetSumWays(nums: list[int], target: int):
         return 0
     target//=2
     def zero_one_bag(i,target):
-        if i<0:
+        if i<0:  # 必须要遍历完所有元素
             return 1 if target==0 else 0
         ans=zero_one_bag(i-1,target)+zero_one_bag(i-1,target-nums[i])
         return ans
@@ -1056,11 +1057,11 @@ def wordBreak2(s: str, wordDict) -> bool:
     n = len(s)
     wordDict = set(wordDict)  # 转换为集合提高查询效率
     @cache
-    def dfs(i):
+    def dfs(i): # dp[i] 表示 s[0:i] 是否能被拆分。
         if i == 0:
             return True  # 空字符串可以被拆分（base case）
         for j in range(i - 1, -1, -1):  # 从 i-1 倒序遍历到 0
-            if s[j:i] in wordDict and dfs(j):
+            if s[j:i] in wordDict and dfs(j): # 也就是说字符串被分成了两部分，前部分为dfs(j)的判断（不包括j），后部分为s[j:n]判断是否在wordDict中
                 return True
         return False
     return dfs(n)  # 判断整个字符串 s[0:n] 是否能被拆分

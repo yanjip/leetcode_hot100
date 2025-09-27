@@ -2,7 +2,7 @@
 # author: YanJP
 from collections import Counter
 
-
+# ------------02回溯.py------------
 # ------------回溯可分为子集型回溯、组合型回溯、排列型回溯-------------------------
 
 # 17. 电话号码的字母组合
@@ -58,6 +58,26 @@ def subsets2(nums):  # 不同的写法 从输入的角度（选还是不选）�
     dfs(0)
     return ans
 # print(subsets2([1,2,3]))
+
+# 90. 子集 II (含有重复元素)
+# 输入：nums = [1,2,2]
+# 输出：[[],[1],[1,2],[1,2,2],[2],[2,2]]
+#如果直接套用子集代码，结果是： [[],[1],[1,2],[1,2,2],[1,2],[2],[2,2],[2]]
+def subsetsWithDup(nums):
+    nums.sort()
+    ans = []
+    path = []
+    n = len(nums)
+    def dfs(i):
+        ans.append(path.copy())   # 这里没有 return
+        for j in range(i, n):
+            if j>i and nums[j]==nums[j-1]: # 上一次如果递归了2，这次的值还是2的话就跳过
+                continue
+            path.append(nums[j])
+            dfs(j + 1)
+            path.pop()
+    dfs(0)
+    return ans
 
 # 131. 分割回文串  （更适合采用枚举选哪个的方法求解，而括号生成那题更适合选或不选的方法）
 # 输入：s = "aab"
@@ -118,25 +138,6 @@ def continuous_huiwen(s):
         expand(i, i + 1)  # 偶数长度
     return out
 
-# 90. 子集 II (含有重复元素)
-# 输入：nums = [1,2,2]
-# 输出：[[],[1],[1,2],[1,2,2],[2],[2,2]]
-#如果直接套用子集代码，结果是： [[],[1],[1,2],[1,2,2],[1,2],[2],[2,2],[2]]
-def subsetsWithDup(nums):
-    nums.sort()
-    ans = []
-    path = []
-    n = len(nums)
-    def dfs(i):
-        ans.append(path.copy())   # 这里没有 return
-        for j in range(i, n):
-            if j>i and nums[j]==nums[j-1]: # 上一次如果递归了2，这次的值还是2的话就跳过
-                continue
-            path.append(nums[j])
-            dfs(j + 1)
-            path.pop()
-    dfs(0)
-    return ans
 
 # 79. 单词搜索
 # 给定一个 m x n 二维字符网格 board 和一个字符串单词 word 。如果 word 存在于网格中，返回 true ；否则，返回 false 。同一个单元格内的字母不允许被重复使用。
@@ -240,8 +241,7 @@ def combine3(n: int, k: int):  # 使用选和不选的思路解决
 # n,k=map(int,input().strip().split())
 # print(combine2(n,k))
 
-
-# 39. 组合总和
+# 39. 组合总和 只有这个是hot100的
 # 给你一个 无重复元素 的整数数组 candidates 和一个目标整数 target ，
 # 找出 candidates 中可以使数字和为目标数 target 的 所有 不同组合(可以 无限制重复被选取 ) ，并以列表形式返回。你可以按 任意顺序 返回这些组合。
 # [2,2,3]和[2,3,2]属于一种组合
@@ -262,6 +262,7 @@ def combinationSum( candidates, target: int) :
             path.pop()
     dfs(0, 0)
     return ans
+print(combinationSum([1,2,3], 4))
 # 按照下一题的写法求解（效率还没上一题优化好）
 def combinationSum3( candidates, target: int):
     candidates.sort(reverse=True)
@@ -369,7 +370,8 @@ def combinationSum2_1(candidates, target: int) :
             return
         elif ss > target:
             return
-        elif target - ss < candidates[i]:
+        # elif target - ss < candidates[i]:
+        elif ss + candidates[i] > target:
             return
         for j in range(i,-1,-1):
             # 如果不加这个判断，DFS 在同一层循环里会把前一个 1 和后一个 1 都作为起点再递归一次，最后得到完全一样的组合，导致结果里有重复解。
