@@ -111,7 +111,7 @@ def combinationSum4_2(nums: list[int], target: int) -> int:
         f[i] = total
     return f[target]
 
-# 39. 组合总和 hot100
+# 39. 组合总和 hot100 （回溯）
 # 给你一个 无重复元素 的整数数组 candidates 和一个目标整数 target ，
 # 找出 candidates 中可以使数字和为目标数 target 的 所有 不同组合(可以 无限制重复被选取 ) ，并以列表形式返回。你可以按 任意顺序 返回这些组合。
 # [2,2,3]和[2,3,2]属于一种组合  (和上题不一样）
@@ -290,17 +290,6 @@ def longestCommonSubsequence_huisu(text1: str, text2: str) -> int:
             return dfs(i-1,j-1)+1
         return max(dfs(i-1,j),dfs(i,j-1))
     return dfs(m-1,n-1)
-def longestCommonSubsequence(text1: str, text2: str) -> int:
-    len1=len(text1)
-    len2=len(text2)
-    dfs=[[0]*(len2+1) for _ in range(len1+1)]
-    for i in range(1,len1+1):
-        for j in range(1,len2+1):
-            if text1[i-1]==text2[j-1]:  # 这里要写减一，不然会越界！！！
-                dfs[i][j]=dfs[i-1][j-1]+1
-            else:
-                dfs[i][j]=max(dfs[i-1][j],dfs[i][j-1])
-    return dfs[-1][-1]
 def longestCommonSubsequence2(text1: str, text2: str) -> int:  # 注意和上面解法的区别
     len1=len(text1)
     len2=len(text2)
@@ -312,8 +301,6 @@ def longestCommonSubsequence2(text1: str, text2: str) -> int:  # 注意和上面
             else:
                 dfs[i+1][j+1]=max(dfs[i][j+1],dfs[i+1][j])
     return dfs[-1][-1]
-
-
 # text1  = input().strip()
 # text2  = input().strip()
 # print(longestCommonSubsequence(text1,text2))
@@ -812,7 +799,7 @@ def diameterOfBinaryTree(root: TreeNode) -> int:
         left_len=dfs(node.left)+1
         right_len=dfs(node.right)+1
         nonlocal ans
-        ans=max(ans,left_len+right_len) # 以当前节点拐弯的最长路径
+        ans=max(ans,left_len+right_len) # 以当前节点拐弯的最长路径，注意，不是数点，是数边，所以并没有重复计算
         return max(left_len,right_len)  # 要思考返回的到底是什么？dfs(node)的目的是获取以node为根节点的最大深度(不拐弯)，所以返回的是left_len和right_len中的较大值
     dfs(root)
     return ans

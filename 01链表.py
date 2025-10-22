@@ -88,6 +88,7 @@ def reverseKGroup(head: ListNode, k: int) -> ListNode:
 def hasCycle(head: ListNode) -> bool:
     fast=head
     slow=head
+    # 如果没有环，执行完循环后，fast指向链表尾部（奇数），或者fast为None（偶数）
     while fast and fast.next:
         fast=fast.next.next
         slow=slow.next

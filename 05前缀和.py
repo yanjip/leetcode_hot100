@@ -42,6 +42,18 @@ def subarraySum( nums: List[int], K: int) -> int:
     return ans
 # print(subarraySum([1,2,3],2))
 
+# 一次遍历解法：一边计算前缀和，一边遍历前缀和。
+def subarraySum_once(nums: List[int], K: int) -> int:
+    ans = s = 0
+    cnt = defaultdict(int)
+    cnt[0] = 1  # 对应上面sj=1时，cnt[sj]+=1
+    for x in nums:
+        s += x             #1. 计算前缀和
+        ans += cnt[s - K]  #2. 更新答案
+        cnt[s] += 1        #3. 更新哈希表中对应前缀和的个数
+    return ans
+
+
 # 对比下面这个题
 # 3. 无重复字符的最长子串
 # 给定一个字符串 s ，请你找出其中不含有重复字符的 最长 子串 的长度。
@@ -58,24 +70,16 @@ def lengthOfLongestSubstring( s):
         ans=max(ans,right-left+1)
     return ans
 
-# 一次遍历解法：一边计算前缀和，一边遍历前缀和。
-def subarraySum_once(nums: List[int], K: int) -> int:
-    ans = s = 0
-    cnt = defaultdict(int)
-    cnt[0] = 1  # 对应上面sj=1时，cnt[sj]+=1
-    for x in nums:
-        s += x             #1. 计算前缀和
-        ans += cnt[s - K]  #2. 更新答案
-        cnt[s] += 1        #3. 更新哈希表中对应前缀和的个数
-    return ans
+
 
 
 # 437. 路径总和 III
 # 给定一个二叉树的根节点 root ，和一个整数 targetSum ，求该二叉树里节点值之和等于 targetSum 的 路径 的数目。
 # 路径 不需要从根节点开始，也不需要在叶子节点结束，但是路径方向必须是向下的（只能从父节点到子节点）。
 # 解法一：递归解法
+# 时间复杂度是 O(n²)
 def pathSum(root, targetSum: int) -> int:
-    def dfs(node, cur_sum):
+    def dfs(node, cur_sum): # 从当前节点 node 出发，计算以 node 为起点的路径和等于 targetSum 的路径数量。
         if node is None:
             return 0
         cnt=0
@@ -109,4 +113,21 @@ def pathSum2(root, targetSum: int) -> int:
         dfs(node.right, s)
         cnt[s] -= 1
     dfs(root, 0)
+    return ans
+
+#42. 接雨水
+# 前缀和分解
+def trap(height: list[int]) -> int:
+    n = len(height)
+    pre = [0] * n
+    suf = [0] * n
+    pre[0] = height[0]
+    suf[-1] = height[-1]
+    for i in range(1, n):
+        pre[i] = max(pre[i - 1], height[i])
+    for i in range(n - 2, -1, -1):
+        suf[i] = max(suf[i + 1], height[i])
+    ans = 0
+    for h, p, s in zip(height, pre, suf):
+        ans += min(s, p) - h
     return ans

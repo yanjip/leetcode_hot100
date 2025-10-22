@@ -71,7 +71,7 @@ def numSubarrayProductLessThanK( nums: list[int], k: int) -> int:
 def subarraySum( nums: list[int], k: int) -> int:
     #  如     1 1 0 1 1，k=2
     # 前缀和:0 1 2 2 3 4, 第二个2减0=2,得到一个子数组; 4减第一个2=2，得到一个子数组; 4-第二个2=2，得到一个子数组;...
-    s=[0] * (len(nums)+1)
+    s=[0] * (len(nums)+1) # 这里必须写成+1，因为第一次遍历时会执行cnt[sj]+=1，得到cnt[0]=1
     for i, x in enumerate(nums):
         s[i + 1] = s[i] + x # 构建前缀和数组
     ans = 0
@@ -125,3 +125,23 @@ def findAnagrams(s: str, p: str) -> list[int]:
         if right - left + 1 == len(p):  # s' 和 p 的每种字母的出现次数都相同
             ans.append(left)  # s' 左端点下标加入答案
     return ans
+
+# 76. 最小覆盖子串
+# 给你一个字符串 s 、一个字符串 t 。返回 s 中涵盖 t 所有字符的最小子串。
+# 如果 s 中不存在涵盖 t 所有字符的子串，则返回空字符串 "" 。
+# 输入：s = "ADOBECODEBANC", t = "ABC"
+# 输出："BANC"
+# 解释：最小覆盖子串 "BANC" 包含来自字符串 t 的 'A'、'B' 和 'C'。
+def minWindow(s: str, t: str) -> str:
+    ans_left, ans_right = -1, len(s)
+    cnt_s = Counter()
+    cnt_t = Counter(t)
+    left = 0
+    for right, c in enumerate(s):
+        cnt_s[c] += 1
+        while cnt_s >= cnt_t:
+            if right - left < ans_right - ans_left:
+                ans_left, ans_right = left, right
+            cnt_s[s[left]] -= 1  # 如果子串涵盖 t，就不断移动左端点 left 直到不涵盖为止。
+            left += 1
+    return "" if ans_left < 0 else s[ans_left:ans_right + 1]

@@ -36,17 +36,6 @@ from collections import deque, Counter
 # 返回一个数组 answer ，其中 answer[i] 是指对于第 i 天，下一个更高温度出现在几天后。如果气温在这之后都不会升高，请在该位置用 0 来代替。
 # 输入: temperatures = [30,40,50,60]
 # 输出: [1,1,1,0]
-def dailyTemperatures(temperatures: list[int]) -> list[int]:
-    st=[] # 单调栈  存放下标 从下往上为递减的栈
-    ans=[0]*len(temperatures)  # 这里初始化0也很关键
-    for i in range(len(temperatures)-1,-1,-1):
-        t=temperatures[i]
-        while st and t>=temperatures[st[-1]]:  # 先pop更新单调栈，再push当前值，即下面的append
-            st.pop()
-        if st:
-            ans[i]=st[-1]-i
-        st.append(i)
-    return ans
 def dailyTemperatures_forword(temperatures: list[int]) -> list[int]:
     st=[] # 单调栈  存放下标 从下往上为递减的栈
     ans=[0]*len(temperatures)
@@ -180,7 +169,7 @@ def decodeString( s):
         else:
             res+=c
     return res
-# print(decodeString("3[a]2[bc]"))
+# print(decodeString("3[ab2[cjk]]")) # abcjkcjkabcjkcjkabcjkcjk
 
 # 443. 压缩字符串 非hot
 # 输入：chars = ["a","a","b","b","c","c","c"]
@@ -238,7 +227,7 @@ def find_left_small(heights: list[int]):
         st.append(i)
     print(left, right)
     return left, right
-# find_left_small([2,1,5,6,2,3])
+find_left_small([2,1,5,6,2,3])
 
 # 84. 柱状图中最大的矩形
 # 给定 n 个非负整数，用来表示柱状图中各个柱子的高度。每个柱子彼此相邻，且宽度为 1 。
@@ -261,7 +250,7 @@ def largestRectangleArea(heights) -> int:
 # 最大堆（Max-Heap）：每个节点的值 ≥ 其子节点的值（根节点是最大值）。
 
 # 347. 前 K 个高频元素
-def topKFrequent(self, nums: list[int], k: int) :
+def topKFrequent( nums: list[int], k: int) :
     # cnt=Counter(nums) # 第一步：统计每个元素的出现次数
     # max_cnt=max(cnt.values())
     # # 第二步：把出现次数相同的元素，放到同一个桶中

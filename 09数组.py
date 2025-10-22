@@ -104,10 +104,11 @@ def searchMatrix(matrix, target: int) -> bool:
             j-=1
     return False
 
-# 240. 搜索二维矩阵 II
+# 240. 搜索二维矩阵 II 和上题解法一模一样
 # 搜索 m x n 矩阵 matrix 中的一个目标值 target 。该矩阵具有以下特性：
 # 每行的元素从左到右升序排列。
 # 每列的元素从上到下升序排列。
+# 时间复杂度：O(m+n)
 def searchMatrixII(matrix: list[list[int]], target: int) -> bool:
     m, n =len(matrix), len(matrix[0])
     x, y =0, n-1

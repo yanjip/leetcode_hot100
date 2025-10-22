@@ -88,7 +88,7 @@ def partition( s: str):
     ans=[]
     path=[]
     n=len(s)
-    def dfs(i):
+    def dfs(i): # 每一次dfs就是选择一个子串
         if i==n:
             ans.append(path.copy())
             return
@@ -262,7 +262,7 @@ def combinationSum( candidates, target: int) :
             path.pop()
     dfs(0, 0)
     return ans
-print(combinationSum([1,2,3], 4))
+# print(combinationSum([1,2,3], 4))
 # 按照下一题的写法求解（效率还没上一题优化好）
 def combinationSum3( candidates, target: int):
     candidates.sort(reverse=True)
