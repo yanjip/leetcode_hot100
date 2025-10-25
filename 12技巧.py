@@ -12,7 +12,8 @@ def majorityElement( nums:list[int]) -> int:
     votes=0
     ans=0
     for x in nums:
-        if votes==0: ans=x
+        if votes==0:
+            ans=x
         if x==ans:
             votes+=1
         else:

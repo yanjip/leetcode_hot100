@@ -139,6 +139,7 @@ def minWindow(s: str, t: str) -> str:
     left = 0
     for right, c in enumerate(s):
         cnt_s[c] += 1
+        # cnt_s >= cnt_t 表示对于 cnt_t 中的每一个键（字符），cnt_s 中对应键的计数都大于或等于 cnt_t 中的计数。
         while cnt_s >= cnt_t:
             if right - left < ans_right - ans_left:
                 ans_left, ans_right = left, right

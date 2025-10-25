@@ -15,6 +15,18 @@ class Solution:
                 return [idx[target - x], j]
             idx[x] = j
 
+# 49. 字母异位词分组
+# 输入: strs = ["eat", "tea", "tan", "ate", "nat", "bat"]
+# 输出: [["bat"],["nat","tan"],["ate","eat","tea"]]
+def groupAnagrams(strs):
+    table = {}
+    for s in strs:
+        s_ = "".join(sorted(s))
+        if s_ not in table:
+            table[s_] = [s]
+        else:
+            table[s_].append(s)
+    return list(table.values())
 
 # 167. 两数之和 II - 输入有序数组 （也可认为是相向双指针） （非hot100
 # 输入：numbers = [2,7,11,15], target = 9

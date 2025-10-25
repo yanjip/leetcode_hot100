@@ -210,22 +210,6 @@ def kthSmallest(root, k: int) -> int:
         return dfs(node.right)  # 右子树会返回答案或者 -1
     return dfs(root)
 
-def kthSmallest2(root: Optional[TreeNode], k: int) -> int:
-    def dfs(node, k):
-        if not node:
-            return None, k  # 返回 (结果, 剩余的 k)
-        # 遍历左子树
-        left_result, k = dfs(node.left, k)
-        if left_result is not None:
-            return left_result, k  # 左子树找到答案，直接返回
-        # 处理当前节点
-        k -= 1
-        if k == 0:
-            return node.val, k  # 当前节点是第 k 小，返回其值
-        # 遍历右子树
-        return dfs(node.right, k)  # 传递更新后的 k
-    result, _ = dfs(root, k)
-    return result
 def kthSmallest3(root, k):
     ans = []
     def dfs(node):
