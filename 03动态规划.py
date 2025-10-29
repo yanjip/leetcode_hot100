@@ -184,14 +184,14 @@ def findTargetSumWays2(nums: list[int], target: int):
 # 322. 零钱兑换  完全背包问题 返回能凑成amount的最小的硬币数
 def coinChange(coins: list[int], amount: int) -> int:
     n=len(coins)
-    # @cache
-    # def dfs(i,target):
-    #     if i<0:
-    #         return 0 if target==0 else float("inf")
-    #     if target<coins[i]:
-    #         return dfs(i-1,target)
-    #     ans=min(dfs(i-1,target),dfs(i,target-coins[i])+1)
-    #     return ans
+    @cache
+    def dfs(i,target):
+        if i<0:
+            return 0 if target==0 else float("inf")
+        if target<coins[i]:
+            return dfs(i-1,target)
+        ans=min(dfs(i-1,target),dfs(i,target-coins[i])+1)
+        return ans
     # ans=dfs(n-1,amount)
     # return ans if ans<float("inf") else -1
 
@@ -501,6 +501,32 @@ def maxSubArray_dp( nums: list[int]) -> int:
     for i in range(1, len(nums)):
         f[i] = max(f[i - 1], 0) + nums[i]
     return max(f)
+
+# 变形题：求这个最大连续子数组的长度
+def maxSubArray_length(nums: list[int]) -> int:
+    n = len(nums)
+    # 定义 dfs(i) 返回一个元组 (current_max_sum, current_len)：
+    # current_max_sum：以 nums[i] 结尾的连续子数组的最大和（保持原逻辑）。
+    # current_len：该最大和子数组的长度。
+    @cache
+    def dfs(i):  # 返回 (max_sum, length)
+        if i == 0:
+            return (nums[i], 1)
+        prev_sum, prev_len = dfs(i - 1)
+        # 比较两种情况：加入前一个子数组 vs 以 nums[i] 作为新起点
+        if prev_sum + nums[i] > nums[i]:
+            return (prev_sum + nums[i], prev_len + 1)
+        else:
+            return (nums[i], 1)
+
+    max_sum = float('-inf')
+    max_len = 0
+    for i in range(n):
+        current_sum, current_len = dfs(i)
+        if current_sum > max_sum:
+            max_sum = current_sum
+            max_len = current_len
+    return max_len
 
 # 152. 乘积最大子数组 （对比上面一个题）
 # 输入: nums = [2,3,-2,4]
@@ -1028,18 +1054,6 @@ def isPowerOfTwo(n: int) -> bool:
 # 解释: 返回 true 因为 "applepenapple" 可以由 "apple" "pen" "apple" 拼接成。 注意，你可以重复使用字典中的单词。
 # 本题状态个数等于 O(n)，单个状态的计算时间为 O(L^2)（L=wordDict中最长的字符串长度，注意判断子串是否在哈希集合中需要 O(L) 的时间），
 # 所以记忆化搜索的时间复杂度为 O(nL^2)
-def wordBreak(s: str, wordDict) -> bool:
-    # 记忆化递归函数
-    n = len(s)
-    @cache
-    def dfs(i): # dfs(i): 判断字符串 s 从索引 i 开始到末尾的子串是否能被 wordDict 中的单词完全拆分。
-        if i == n:
-            return True
-        for j in range(i + 1, n + 1):
-            if s[i:j] in wordDict and dfs(j):
-                return True
-        return False
-    return dfs(0)
 def wordBreak2(s: str, wordDict) -> bool:
     n = len(s)
     wordDict = set(wordDict)  # 转换为集合提高查询效率
@@ -1047,7 +1061,9 @@ def wordBreak2(s: str, wordDict) -> bool:
     def dfs(i): # dp[i] 表示 s[0:i] 是否能被拆分。
         if i == 0:
             return True  # 空字符串可以被拆分（base case）
-        for j in range(i - 1, -1, -1):  # 从 i-1 倒序遍历到 0
+        # for j in range(i - 1, -1, -1):  # 从 i-1 倒序遍历到 0
+        # 关于下面为什么要有for循环，可以联想到状态转移图，dfs(i)可以由多个不同的dfs(j)转移过来，所以用for循环依次遍历j
+        for j in range(i):
             if s[j:i] in wordDict and dfs(j): # 也就是说字符串被分成了两部分，前部分为dfs(j)的判断（不包括j），后部分为s[j:n]判断是否在wordDict中
                 return True
         return False

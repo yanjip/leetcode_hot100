@@ -125,6 +125,13 @@ def jump(nums: list[int]) -> int:
             cur_right = next_right
             ans += 1
     return ans
+# 283. 移动零
+def moveZeroes(nums) -> None:
+    left = 0  # 慢指针停留在0，此时不更新，快指针停留在非零，此时交换值
+    for i in range(len(nums)):
+        if nums[i] != 0:
+            nums[left], nums[i] = nums[i], nums[left]
+            left += 1  # 等于0的时候更新慢指针
 
 # 146. LRU 缓存
 # 请你设计并实现一个满足  LRU (最近最少使用) 缓存 约束的数据结构。
